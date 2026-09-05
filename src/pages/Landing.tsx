@@ -25,11 +25,10 @@ export function Landing() {
           - Layer 2 (Top, z-index: 20): <HeroMockup /> spanning both layers without clipping
           ========================================================================= */}
       <section
-        className="relative overflow-hidden"
+        className="hero-section relative overflow-hidden"
         style={{
           background: designTokens.colors.bgWhite, // Layer 0: Base White Section
           paddingTop: 64, // Accounts for fixed Navbar
-          minHeight: 'clamp(780px, 90vh, 960px)',
           position: 'relative',
         }}
       >
@@ -42,7 +41,7 @@ export function Landing() {
             }}
           >
             {/* Left Column: Heading ONLY */}
-            <div style={{ maxWidth: 660 }}>
+            <div className="hero-heading-wrap">
               <div
                 style={{
                   paddingTop: 'clamp(20px, 3.5vw, 44px)',
@@ -50,31 +49,27 @@ export function Landing() {
                 }}
               >
                 <h1
-                  className="leading-none"
+                  className="hero-heading leading-none"
                   style={{
                     fontFamily: designTokens.typography.fontFamilies.heading,
-                    fontSize: designTokens.typography.fontSizes.hero,
                     fontWeight: 800,
                     color: designTokens.colors.dark,
                     letterSpacing: designTokens.typography.letterSpacings.tight,
-                    lineHeight: 0.92,
                   }}
                 >
                   ASK YOUR
                 </h1>
                 <h1
-                  className="leading-none"
+                  className="hero-heading hero-heading-question leading-none"
                   style={{
                     fontFamily: designTokens.typography.fontFamilies.heading,
-                    fontSize: designTokens.typography.fontSizes.hero,
                     fontWeight: 300,
                     fontStyle: 'italic',
                     color: designTokens.colors.dark,
-                    letterSpacing: '-0.02em',
-                    lineHeight: 0.92,
+                    letterSpacing: '-0.03em',
                   }}
                 >
-                  QUESTION.
+                  QUESTION
                 </h1>
               </div>
             </div>
@@ -191,11 +186,10 @@ export function Landing() {
             Download the app and start creating anonymous polls in seconds.
           </p>
 
-          {/* App Store / Google Play Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+          <div className="cta-store-buttons">
             <a
               href="#app-store"
-              className="flex items-center gap-3 px-6 py-3.5 rounded-full transition-all duration-200"
+              className="cta-store-btn rounded-full transition-all duration-200"
               style={{
                 background: designTokens.colors.bgWhite,
                 color: designTokens.colors.dark,
@@ -222,7 +216,7 @@ export function Landing() {
 
             <a
               href="#google-play"
-              className="flex items-center gap-3 px-6 py-3.5 rounded-full transition-all duration-200"
+              className="cta-store-btn rounded-full transition-all duration-200"
               style={{
                 background: designTokens.colors.bgWhite,
                 color: designTokens.colors.dark,

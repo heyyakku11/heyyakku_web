@@ -35,9 +35,8 @@ export function HeroMockup({
 
       {/* Mobile Phone Mockup (Layer 2: Highest z-index: 20) */}
       <div
-        className="lg:hidden flex justify-center px-6 pb-0 mt-8 pointer-events-none"
+        className="hero-mockup-mobile pointer-events-none"
         style={{
-          position: 'relative',
           zIndex: 20,
         }}
       >
@@ -45,8 +44,11 @@ export function HeroMockup({
           src={imageSrc}
           alt={alt}
           style={{
-            height: 'clamp(440px, 88vw, 540px)',
+            height: 'clamp(432px, 66vw, 634px)',
             width: 'auto',
+            maxWidth: 'min(374px, 49vw)',
+            objectFit: 'contain',
+            display: 'block',
             filter: designTokens.shadows.phoneHeroMobile,
             transform: 'translateY(2px)',
             pointerEvents: 'auto',

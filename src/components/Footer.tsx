@@ -63,10 +63,9 @@ export function Footer({ minimal = false }: FooterProps) {
         background: designTokens.colors.bgSecondary,
       }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand & Slogan Column */}
-          <div>
+      <div className="footer-inner">
+        <div className="footer-grid">
+          <div className="footer-brand">
             <Link to="/" className="inline-block mb-3">
               <FooterBrand size={24} />
             </Link>
@@ -77,49 +76,46 @@ export function Footer({ minimal = false }: FooterProps) {
             </p>
           </div>
 
-          {/* Nav Directory Columns */}
-          {FOOTER_SECTIONS.map((section) => (
-            <div key={section.title}>
-              <p
-                className="text-xs font-semibold uppercase tracking-widest mb-4"
-                style={{ color: designTokens.colors.textSubtle }}
-              >
-                {section.title}
-              </p>
-              <ul
-                className="flex flex-col gap-3"
-                style={{ listStyle: 'none', padding: 0, margin: 0 }}
-              >
-                {section.links.map((link) => (
-                  <li key={link} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                    <a
-                      href={`#${link.toLowerCase()}`}
-                      className="text-sm transition-colors duration-150 inline-block"
-                      style={{
-                        color: designTokens.colors.textMuted,
-                        textDecoration: 'none',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = designTokens.colors.dark;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = designTokens.colors.textMuted;
-                      }}
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="footer-nav">
+            {FOOTER_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <p
+                  className="footer-nav-title text-xs font-semibold uppercase tracking-widest mb-4"
+                  style={{ color: designTokens.colors.textSubtle }}
+                >
+                  {section.title}
+                </p>
+                <ul
+                  className="flex flex-col gap-3"
+                  style={{ listStyle: 'none', padding: 0, margin: 0 }}
+                >
+                  {section.links.map((link) => (
+                    <li key={link} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      <a
+                        href={`#${link.toLowerCase()}`}
+                        className="text-sm transition-colors duration-150 inline-block"
+                        style={{
+                          color: designTokens.colors.textMuted,
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = designTokens.colors.dark;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = designTokens.colors.textMuted;
+                        }}
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom Copyright Bar */}
-        <div
-          className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 border-t"
-          style={{ borderColor: designTokens.colors.border }}
-        >
+        <div className="footer-bottom border-t" style={{ borderColor: designTokens.colors.border }}>
           <p className="text-xs" style={{ color: designTokens.colors.textSubtle }}>
             © 2026 Yakku. All rights reserved.
           </p>

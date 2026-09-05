@@ -56,11 +56,9 @@ export function ProcessSection() {
         <div className="process-cards-grid">
           {/* Card 1: Lavender Accent */}
           <div
-            className="flex flex-col justify-between p-8 md:p-10 transition-all duration-300 relative overflow-hidden"
+            className="process-card transition-all duration-300"
             style={{
               background: '#E8E4F8',
-              borderRadius: '28px',
-              minHeight: '420px',
               border: '1px solid rgba(160, 140, 220, 0.3)',
               boxShadow: '0 4px 20px -2px rgba(124, 101, 193, 0.08)',
             }}
@@ -73,16 +71,7 @@ export function ProcessSection() {
               e.currentTarget.style.boxShadow = '0 4px 20px -2px rgba(124, 101, 193, 0.08)';
             }}
           >
-            {/* Top Circle Badge */}
-            <div
-              className="w-14 h-14 rounded-full border flex items-center justify-center"
-              style={{
-                borderColor: 'rgba(0, 0, 0, 0.15)',
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              {/* Phone Outline Icon */}
+            <div className="process-card-badge">
               <svg
                 width="22"
                 height="22"
@@ -98,10 +87,9 @@ export function ProcessSection() {
               </svg>
             </div>
 
-            {/* Bottom Content */}
-            <div>
+            <div className="process-card-copy">
               <h3
-                className="font-extrabold text-2xl mb-3 tracking-tight leading-tight"
+                className="font-extrabold text-2xl tracking-tight leading-tight"
                 style={{
                   fontFamily: designTokens.typography.fontFamilies.heading,
                   color: designTokens.colors.dark,
@@ -122,11 +110,9 @@ export function ProcessSection() {
 
           {/* Card 2: White with Organic Wave Line Watermark */}
           <div
-            className="flex flex-col justify-between p-8 md:p-10 transition-all duration-300 relative overflow-hidden"
+            className="process-card transition-all duration-300"
             style={{
               background: '#FFFFFF',
-              borderRadius: '28px',
-              minHeight: '420px',
               border: '1.5px solid #E5E7EB',
               boxShadow: '0 4px 20px -2px rgba(0, 0, 0, 0.04)',
             }}
@@ -139,7 +125,6 @@ export function ProcessSection() {
               e.currentTarget.style.boxShadow = '0 4px 20px -2px rgba(0, 0, 0, 0.04)';
             }}
           >
-            {/* Organic Soft Squiggle Line Watermark - Matches reference Image 1 */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
               viewBox="0 0 300 400"
@@ -155,15 +140,7 @@ export function ProcessSection() {
               />
             </svg>
 
-            {/* Top Circle Badge */}
-            <div
-              className="w-14 h-14 rounded-full border flex items-center justify-center relative z-10"
-              style={{
-                borderColor: 'rgba(0, 0, 0, 0.15)',
-                background: '#F9FAFB',
-              }}
-            >
-              {/* Wallet / Free Share Icon */}
+            <div className="process-card-badge" style={{ position: 'relative', zIndex: 1 }}>
               <svg
                 width="22"
                 height="22"
@@ -180,10 +157,9 @@ export function ProcessSection() {
               </svg>
             </div>
 
-            {/* Bottom Content */}
-            <div className="relative z-10">
+            <div className="process-card-copy" style={{ position: 'relative', zIndex: 1 }}>
               <h3
-                className="font-extrabold text-2xl mb-3 tracking-tight leading-tight"
+                className="font-extrabold text-2xl tracking-tight leading-tight"
                 style={{
                   fontFamily: designTokens.typography.fontFamilies.heading,
                   color: designTokens.colors.dark,
@@ -202,13 +178,11 @@ export function ProcessSection() {
             </div>
           </div>
 
-          {/* Card 3: Soft Lilac Tint (No green, shades of lavender/slate) */}
+          {/* Card 3: Soft Lilac Tint */}
           <div
-            className="flex flex-col justify-between p-8 md:p-10 transition-all duration-300 relative overflow-hidden"
+            className="process-card transition-all duration-300"
             style={{
               background: '#EDE8FA',
-              borderRadius: '28px',
-              minHeight: '420px',
               border: '1px solid rgba(160, 140, 220, 0.3)',
               boxShadow: '0 4px 20px -2px rgba(124, 101, 193, 0.08)',
             }}
@@ -221,16 +195,7 @@ export function ProcessSection() {
               e.currentTarget.style.boxShadow = '0 4px 20px -2px rgba(124, 101, 193, 0.08)';
             }}
           >
-            {/* Top Circle Badge */}
-            <div
-              className="w-14 h-14 rounded-full border flex items-center justify-center"
-              style={{
-                borderColor: 'rgba(0, 0, 0, 0.15)',
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              {/* Analytics / Spark Percent Icon */}
+            <div className="process-card-badge">
               <svg
                 width="22"
                 height="22"
@@ -247,10 +212,9 @@ export function ProcessSection() {
               </svg>
             </div>
 
-            {/* Bottom Content */}
-            <div>
+            <div className="process-card-copy">
               <h3
-                className="font-extrabold text-2xl mb-3 tracking-tight leading-tight"
+                className="font-extrabold text-2xl tracking-tight leading-tight"
                 style={{
                   fontFamily: designTokens.typography.fontFamilies.heading,
                   color: designTokens.colors.dark,

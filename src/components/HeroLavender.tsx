@@ -56,31 +56,23 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
       {/* Lavender Area Content Container */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 h-full relative z-10 flex flex-col justify-between py-6 lg:py-8">
         {/* Left Column Content (Constrained to left side) */}
-        <div style={{ maxWidth: 540 }}>
-          {/* Top Sub-section: Bold Paragraph ONLY */}
-          <div className="mb-8 lg:mb-12">
+        <div className="hero-lavender-content">
+          <div className="hero-lavender-copy-wrap">
             <p
-              className="leading-relaxed"
-              style={{
-                color: designTokens.colors.dark,
-                fontSize: 'clamp(15px, 1.25vw, 17px)',
-                fontWeight: 600,
-                maxWidth: 460,
-                lineHeight: 1.5,
-              }}
+              className="hero-lavender-copy"
+              style={{ color: designTokens.colors.dark }}
             >
               Anonymous polls made for real opinions. Share a link and collect honest votes — no
               accounts, no tracking, no filters.
             </p>
           </div>
 
-          {/* Bottom Sub-section: Get Started Button + The mobile app is available now & iOS/Android Buttons */}
-          <div className="flex flex-col gap-6">
+          <div className="hero-lavender-actions">
             <div>
               <a
                 href="#download"
                 onClick={handleScrollToDownload}
-                className="inline-block px-8 py-3.5 rounded-full font-bold text-sm border-2 transition-all duration-200 cursor-pointer"
+                className="hero-lavender-cta rounded-full border-2 transition-all duration-200 cursor-pointer"
                 style={{
                   background: designTokens.colors.dark,
                   color: designTokens.colors.textWhite,
@@ -101,10 +93,9 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
               </a>
             </div>
 
-            {/* App Availability Row */}
-            <div className="flex items-center gap-4">
+            <div className="hero-lavender-app-row">
               <p
-                className="text-sm leading-tight font-semibold"
+                className="hero-lavender-app-label"
                 style={{ color: designTokens.colors.dark }}
               >
                 The mobile app
@@ -112,14 +103,11 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
                 is available now
               </p>
 
-              {/* App Store Circular Button (Transparent bg, thin border, black icon) */}
               <a
                 href="#download"
                 title="Download on App Store"
-                className="flex items-center justify-center rounded-full transition-all duration-200 flex-shrink-0 cursor-pointer"
+                className="hero-lavender-store-btn flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer"
                 style={{
-                  width: 46,
-                  height: 46,
                   background: 'transparent',
                   border: `1px solid ${designTokens.colors.dark}`,
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
@@ -137,7 +125,7 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
                   if (path) path.style.fill = designTokens.colors.dark;
                 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24">
+                <svg viewBox="0 0 24 24">
                   <path
                     fill={designTokens.colors.dark}
                     style={{ transition: 'fill 200ms' }}
@@ -146,14 +134,11 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
                 </svg>
               </a>
 
-              {/* Google Play Circular Button (Transparent bg, thin border, black icon) */}
               <a
                 href="#download"
                 title="Get it on Google Play"
-                className="flex items-center justify-center rounded-full transition-all duration-200 flex-shrink-0 cursor-pointer"
+                className="hero-lavender-store-btn flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer"
                 style={{
-                  width: 46,
-                  height: 46,
                   background: 'transparent',
                   border: `1px solid ${designTokens.colors.dark}`,
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
@@ -171,7 +156,7 @@ export function HeroLavender({ onGetStartedClick }: HeroLavenderProps) {
                   if (path) path.style.fill = designTokens.colors.dark;
                 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24">
+                <svg viewBox="0 0 24 24">
                   <path
                     fill={designTokens.colors.dark}
                     style={{ transition: 'fill 200ms' }}

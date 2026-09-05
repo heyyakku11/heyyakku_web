@@ -201,6 +201,8 @@ svg {
 .w-5 { width: 20px; }
 .h-6 { height: 24px; }
 .w-6 { width: 24px; }
+.w-14 { width: 56px; }
+.h-14 { height: 56px; }
 .h-16 { height: 64px; }
 .w-16 { width: 64px; }
 
@@ -232,6 +234,8 @@ svg {
 
 /* Paddings */
 .p-2 { padding: 8px; }
+.p-8 { padding: 32px; }
+.p-10 { padding: 40px; }
 .px-1\.5 { padding-inline: 6px; }
 .px-4 { padding-inline: 16px; }
 .px-6 { padding-inline: 24px; }
@@ -315,6 +319,7 @@ svg {
 
 /* Responsive Media Queries */
 @media (min-width: 640px) {
+  .sm\:flex { display: flex; }
   .sm\:flex-row { flex-direction: row; }
   .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -327,6 +332,7 @@ svg {
   .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .md\:px-12 { padding-inline: 48px; }
+  .md\:p-10 { padding: 40px; }
 }
 
 @media (min-width: 1024px) {
@@ -343,6 +349,121 @@ svg {
   .lg\:pl-16 { padding-left: 64px; }
 }
 
+/* Hero: keep 560px layout; grow height from 561px so the heading stays above lavender */
+.hero-section {
+  min-height: clamp(560px, 85vh, 680px);
+}
+
+@media (min-width: 561px) {
+  .hero-section {
+    min-height: clamp(680px, calc(680px + 0.55 * (100vw - 560px)), 860px);
+  }
+}
+
+@media (min-width: 900px) {
+  .hero-section {
+    min-height: clamp(780px, 90vh, 960px);
+  }
+}
+
+.hero-mockup-mobile {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 0;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+@media (min-width: 900px) {
+  .hero-mockup-mobile {
+    display: flex;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-mockup-mobile {
+    display: none;
+  }
+}
+
+.hero-heading-wrap {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 660px;
+}
+
+.hero-heading {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(40px, 12vw, 108px);
+  font-size: clamp(40px, 16cqi, 108px);
+  line-height: 0.92;
+}
+
+.hero-heading-question {
+  white-space: nowrap;
+}
+
+.hero-lavender-content {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 540px;
+}
+
+.hero-lavender-copy-wrap {
+  margin-bottom: clamp(20px, 5cqi, 29px);
+}
+
+.hero-lavender-copy {
+  margin: 0;
+  max-width: 460px;
+  font-size: clamp(13.5px, 4.2cqi, 15.3px);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.hero-lavender-actions {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 4.2cqi, 22px);
+}
+
+.hero-lavender-cta {
+  display: inline-block;
+  font-size: clamp(12.5px, 3.2cqi, 12.6px);
+  font-weight: 700;
+  line-height: 1.2;
+  padding: clamp(10px, 2.6cqi, 13px) clamp(22px, 6cqi, 29px);
+}
+
+.hero-lavender-app-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 3cqi, 14px);
+}
+
+.hero-lavender-app-label {
+  margin: 0;
+  font-size: clamp(12px, 3cqi, 12.6px);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.hero-lavender-store-btn {
+  width: clamp(37px, 9cqi, 41px);
+  height: clamp(37px, 9cqi, 41px);
+  flex-shrink: 0;
+}
+
+.hero-lavender-store-btn svg {
+  width: clamp(16px, 4.2cqi, 20px);
+  height: clamp(16px, 4.2cqi, 20px);
+}
+
 /* Process Section 3-Cards Grid */
 .process-cards-grid {
   display: grid;
@@ -350,10 +471,54 @@ svg {
   gap: 24px;
 }
 
+.process-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 280px;
+  gap: 48px;
+  padding: 28px;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.process-card-badge {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.process-card-copy {
+  width: 100%;
+}
+
+.process-card-copy h3 {
+  margin: 0 0 12px;
+}
+
+.process-card-copy p {
+  margin: 0;
+}
+
 @media (min-width: 768px) {
   .process-cards-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 28px;
+  }
+
+  .process-card {
+    min-height: 300px;
+    padding: 32px;
+    gap: 56px;
   }
 }
 
@@ -381,5 +546,122 @@ svg {
     top: 96px;
     justify-content: space-between;
     min-height: 480px;
+  }
+}
+
+/* Footer: brand stacked above 3-col nav on phones, 4-col layout from tablet up */
+.footer-inner {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 40px 24px 32px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.footer-brand {
+  min-width: 0;
+}
+
+.footer-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 16px;
+  row-gap: 28px;
+  min-width: 0;
+}
+
+.footer-nav > div {
+  min-width: 0;
+}
+
+.footer-nav-title {
+  white-space: nowrap;
+}
+
+.footer-bottom {
+  margin-top: 32px;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .footer-inner {
+    padding: 48px 24px 40px;
+  }
+
+  .footer-nav {
+    column-gap: 32px;
+  }
+
+  .footer-bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+  }
+}
+
+@media (min-width: 768px) {
+  .footer-inner {
+    padding: 48px;
+  }
+
+  .footer-grid {
+    grid-template-columns: minmax(160px, 1.35fr) repeat(3, minmax(0, 1fr));
+    gap: 40px;
+  }
+
+  .footer-nav {
+    display: contents;
+  }
+}
+
+/* Download CTA: App Store / Google Play buttons share one size */
+.cta-store-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+  width: min(100%, 240px);
+  margin-inline: auto;
+  margin-bottom: 24px;
+}
+
+.cta-store-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  height: 52px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.cta-store-btn svg {
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .cta-store-buttons {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .cta-store-btn {
+    width: 240px;
   }
 }

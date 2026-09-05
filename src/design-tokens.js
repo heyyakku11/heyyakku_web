@@ -67,7 +67,7 @@ export const designTokens = {
       '7xl': '4.5rem',   // 72px
 
       // Fluid/Responsive Font Sizes
-      hero: 'clamp(64px, 8.5vw, 108px)',
+      hero: 'clamp(40px, 12vw, 108px)',
       heroSubtitle: '16px',
       statNumber: 'clamp(32px, 5vw, 56px)',
       sectionHeading: 'clamp(36px, 5vw, 64px)',

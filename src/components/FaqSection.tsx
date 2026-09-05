@@ -10,27 +10,27 @@ interface FaqItem {
 const FAQS: FaqItem[] = [
   {
     id: 'anonymous-voting',
-    question: 'How does anonymous voting work on Yakku to ensure my identity stays private?',
+    question: 'How does anonymous voting work, and is my identity private?',
     answer:
-      'When you vote on Yakku, no personal credentials, IP addresses, or browser cookies are collected or attached to your response. Only aggregate counts update instantly in real time, keeping your honest feedback completely anonymous, secure, and untraceable.',
+      'When you vote, your name, email, or device is not attached to your answer. Only the running total updates in real time, so your honest choice stays private and untraceable.',
   },
   {
     id: 'app-download',
-    question: 'Do voters need to download the Yakku app or create an account to vote?',
+    question: 'Do I need to download the app or create an account to vote?',
     answer:
-      'No app download or account creation is required to vote. Anyone who receives your link can participate immediately in any web browser on desktop or mobile, ensuring lightning-fast responses and zero friction for your friends, team, or community.',
+      'No app or account is required to vote. Anyone with your link can take part in a browser on phone or desktop, so friends can respond in seconds with no extra steps.',
   },
   {
     id: 'share-platforms',
-    question: 'Where can I share my Yakku polls and who can see the live results?',
+    question: 'Where can I share my poll, and who can see the results?',
     answer:
-      'You can share your poll link across WhatsApp, Instagram Stories, X, Telegram, or direct messages. Poll creators see live updating statistics instantly, while voters view aggregated percentage results immediately after submitting their private choice without seeing individual identities.',
+      'You can share your poll link on WhatsApp, Instagram, or in a message. You see live results as votes come in, while voters only see the totals—not who chose what.',
   },
   {
     id: 'free-and-ads',
-    question: 'Is Yakku completely free to use, and are there any advertisements or hidden fees?',
+    question: 'Is Yakku free to use, and are there ads or hidden fees?',
     answer:
-      'Yakku is entirely free to use with zero advertisements and no subscription fees. We believe honest opinions thrive without intrusive distractions, so creating questions and collecting candid votes remains fast, accessible, and enjoyable for everyone at all times.',
+      'Yakku is free to use, with no ads and no hidden or subscription fees. You can create polls and collect honest votes at any time without paying anything.',
   },
 ];
 
@@ -97,7 +97,7 @@ export function FaqSection() {
                   e.currentTarget.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.16)';
                 }}
               >
-                Contact Sales
+                Contact Yakku
               </a>
             </div>
           </div>
