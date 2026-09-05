@@ -8,12 +8,12 @@
 export const designTokens = {
   // 1. COLORS
   colors: {
-    // Primary Brand Accent
-    primary: '#00c47a',
-    primaryHover: '#00b36e',
-    primaryLight: 'rgba(0, 196, 122, 0.08)',
-    primarySubtle: 'rgba(0, 196, 122, 0.04)',
-    primaryGlow: 'rgba(0, 196, 122, 0.25)',
+    // Primary Brand Accent (Lavender)
+    primary: '#7C65C1',
+    primaryHover: '#684EB5',
+    primaryLight: 'rgba(124, 101, 193, 0.10)',
+    primarySubtle: 'rgba(124, 101, 193, 0.05)',
+    primaryGlow: 'rgba(124, 101, 193, 0.25)',
 
     // Dark Neutrals & Headings
     dark: '#111111',

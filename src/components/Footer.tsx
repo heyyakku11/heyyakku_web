@@ -23,7 +23,7 @@ export function FooterBrand({ size = 22 }: { size?: number }) {
 const FOOTER_SECTIONS = [
   {
     title: 'Product',
-    links: ['About', 'Explore'],
+    links: ['Explore'],
   },
   {
     title: 'Company',
@@ -86,15 +86,21 @@ export function Footer({ minimal = false }: FooterProps) {
               >
                 {section.title}
               </p>
-              <ul className="flex flex-col gap-3">
+              <ul
+                className="flex flex-col gap-3"
+                style={{ listStyle: 'none', padding: 0, margin: 0 }}
+              >
                 {section.links.map((link) => (
-                  <li key={link}>
+                  <li key={link} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     <a
                       href={`#${link.toLowerCase()}`}
-                      className="text-sm transition-colors duration-150"
-                      style={{ color: designTokens.colors.textMuted }}
+                      className="text-sm transition-colors duration-150 inline-block"
+                      style={{
+                        color: designTokens.colors.textMuted,
+                        textDecoration: 'none',
+                      }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.color = designTokens.colors.primary;
+                        e.currentTarget.style.color = designTokens.colors.dark;
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.color = designTokens.colors.textMuted;
