@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
-import { designTokens } from '../design-tokens.js';
 import {
   fetchPoll,
   getVotePhase,
@@ -14,49 +13,115 @@ import {
 
 type LoadState = { kind: 'loading' } | { kind: 'not-found' } | { kind: 'error' } | { kind: 'ok'; poll: PollDto };
 
-const colors = designTokens.colors;
-const headingFont = designTokens.typography.fontFamilies.heading;
+// Mirrors the Flutter app's poll card (YakkuPalette / AppSpacing / AppRadii).
+const app = {
+  primary: '#D02E62',
+  primaryTint: 'rgba(208, 46, 98, 0.08)',
+  coral: '#E07A5F',
+  text: '#334155',
+  muted: '#64748B',
+  surface: '#FFF9F6',
+  page: '#FFF9F6',
+  card: '#FFFFFF',
+  mist: '#F1F5F4',
+  error: '#B42318',
+  radius: 12,
+  font: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+};
+
+const buttonBase: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: 52,
+  borderRadius: app.radius,
+  fontFamily: app.font,
+  fontSize: 16,
+  fontWeight: 600,
+  textDecoration: 'none',
+  boxSizing: 'border-box',
+};
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-full flex flex-col" style={{ background: colors.bgSecondary }}>
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: app.page }}>
       <Navbar minimal />
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-24">
-        <div className="w-full max-w-md">{children}</div>
+      <main
+        style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          padding: '96px 16px 48px',
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: 480, fontFamily: app.font }}>{children}</div>
       </main>
       <Footer minimal />
     </div>
   );
 }
 
+function Card({ children }: { children: ReactNode }) {
+  return (
+    <div
+      style={{
+        background: app.card,
+        borderRadius: app.radius,
+        border: `1px solid ${app.mist}`,
+        boxShadow: '0 1px 3px rgba(51, 65, 85, 0.08)',
+        padding: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        boxSizing: 'border-box',
+        width: '100%',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Notice({ title, body, retry }: { title: string; body: string; retry?: () => void }) {
   return (
-    <div className="text-center">
-      <h1 className="text-2xl font-bold mb-3" style={{ fontFamily: headingFont, color: colors.textPrimary }}>
-        {title}
-      </h1>
-      <p className="text-sm mb-6" style={{ color: colors.textMuted }}>
-        {body}
-      </p>
-      <div className="flex gap-3 justify-center">
+    <Card>
+      <h1 style={{ fontSize: 16, fontWeight: 800, color: app.text, margin: 0 }}>{title}</h1>
+      <p style={{ fontSize: 14, color: app.muted, margin: 0, lineHeight: 1.4 }}>{body}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
         {retry && (
           <button
             type="button"
             onClick={retry}
-            className="px-6 py-2.5 rounded-lg font-semibold text-sm cursor-pointer"
-            style={{ background: colors.primary, color: colors.textWhite }}
+            style={{ ...buttonBase, background: app.primary, color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             Try again
           </button>
         )}
         <Link
           to="/"
-          className="inline-block px-6 py-2.5 rounded-lg font-semibold text-sm border"
-          style={{ borderColor: colors.border, color: colors.textPrimary, background: colors.bgWhite }}
+          style={{ ...buttonBase, border: `1.5px solid ${app.mist}`, color: app.text, background: app.card }}
         >
           Back to Yakku
         </Link>
       </div>
+    </Card>
+  );
+}
+
+function Footnote({ voteCount }: { voteCount: number }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: app.muted, fontSize: 12 }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path
+          d="M16 11a3 3 0 100-6 3 3 0 000 6zM8 11a3 3 0 100-6 3 3 0 000 6zM8 13c-2.7 0-6 1.3-6 4v2h12v-2c0-2.7-3.3-4-6-4zm8 0c-.3 0-.6 0-1 .1 1.2.9 2 2.1 2 3.9v2h5v-2c0-2.7-3.3-4-6-4z"
+          stroke={app.muted}
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span>{voteCount === 1 ? '1 vote' : `${voteCount} votes`}</span>
     </div>
   );
 }
@@ -91,7 +156,7 @@ export function Vote() {
   if (state.kind === 'loading') {
     return (
       <Shell>
-        <p role="status" className="text-center text-sm" style={{ color: colors.textMuted }}>
+        <p role="status" style={{ textAlign: 'center', fontSize: 14, color: app.muted }}>
           Loading poll…
         </p>
       </Shell>
@@ -160,39 +225,37 @@ export function Vote() {
       href={whatsAppShareUrl(poll.question, poll.id)}
       target="_blank"
       rel="noopener noreferrer"
-      className="block w-full py-2.5 rounded-lg font-semibold text-sm text-center border"
-      style={{ borderColor: colors.primary, color: colors.primary, background: colors.bgWhite }}
+      style={{ ...buttonBase, border: `1.5px solid ${app.primary}`, color: app.primary, background: app.card }}
     >
       Share on WhatsApp
     </a>
   );
 
-  const card = (children: ReactNode) => (
-    <div
-      className="bg-white rounded-xl border w-full p-5 sm:p-7"
-      style={{ borderColor: colors.border, boxShadow: designTokens.shadows.card }}
+  const question = (
+    <h1
+      style={{
+        margin: 0,
+        fontSize: 16,
+        fontWeight: 800,
+        lineHeight: 1.4,
+        color: app.text,
+        overflowWrap: 'anywhere',
+      }}
     >
-      <h1
-        className="font-bold mb-5 leading-snug text-xl"
-        style={{ fontFamily: headingFont, color: colors.textPrimary, overflowWrap: 'anywhere' }}
-      >
-        {poll.question}
-      </h1>
-      {children}
-    </div>
+      {poll.question}
+    </h1>
   );
 
   if (voted) {
     return (
       <Shell>
-        {card(
-          <>
-            <p role="status" className="text-sm font-semibold mb-5" style={{ color: colors.primary }}>
-              ✓ Your vote has been submitted. Thanks for voting!
-            </p>
-            {shareButton}
-          </>,
-        )}
+        <Card>
+          {question}
+          <p role="status" style={{ margin: '4px 0', fontSize: 14, fontWeight: 600, color: app.primary }}>
+            ✓ Your vote has been submitted. Thanks for voting!
+          </p>
+          {shareButton}
+        </Card>
       </Shell>
     );
   }
@@ -200,15 +263,15 @@ export function Vote() {
   if (phase !== 'votable') {
     return (
       <Shell>
-        {card(
-          <>
-            <p role="status" className="text-sm mb-5" style={{ color: colors.textMuted }}>
-              {phase === 'expired' ? 'This poll has expired.' : 'This poll is closed.'} Voting is no
-              longer available.
-            </p>
-            {shareButton}
-          </>,
-        )}
+        <Card>
+          {question}
+          <p role="status" style={{ margin: '4px 0', fontSize: 14, color: app.muted, lineHeight: 1.4 }}>
+            {phase === 'expired' ? 'This poll has expired.' : 'This poll is closed.'} Voting is no longer
+            available.
+          </p>
+          <Footnote voteCount={poll.totalVoteCount} />
+          {shareButton}
+        </Card>
       </Shell>
     );
   }
@@ -216,63 +279,77 @@ export function Vote() {
   const canSubmit = !!selected && !submitting;
   return (
     <Shell>
-      {card(
-        <>
-          <div role="radiogroup" aria-label="Answer options" className="flex flex-col gap-3 mb-5">
-            {poll.options.map((opt) => {
-              const isSelected = selected === opt.id;
-              return (
-                <label
-                  key={opt.id}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg border cursor-pointer"
+      <Card>
+        {question}
+
+        <div role="radiogroup" aria-label="Answer options" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {poll.options.map((opt) => {
+            const isSelected = selected === opt.id;
+            return (
+              <label
+                key={opt.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: 12,
+                  borderRadius: app.radius,
+                  cursor: submitting ? 'default' : 'pointer',
+                  background: isSelected ? app.primaryTint : app.surface,
+                  border: `1.5px solid ${isSelected ? app.primary : 'transparent'}`,
+                  boxSizing: 'border-box',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="poll-option"
+                  value={opt.id}
+                  checked={isSelected}
+                  disabled={submitting}
+                  onChange={() => setSelected(opt.id)}
+                  style={{ accentColor: app.primary, width: 18, height: 18, margin: 0, flexShrink: 0 }}
+                />
+                <span
                   style={{
-                    borderColor: isSelected ? colors.primary : colors.border,
-                    background: isSelected ? 'rgba(0, 196, 122, 0.06)' : colors.bgWhite,
+                    fontSize: 14,
+                    lineHeight: 1.4,
+                    color: app.text,
+                    fontWeight: isSelected ? 600 : 400,
+                    overflowWrap: 'anywhere',
                   }}
                 >
-                  <input
-                    type="radio"
-                    name="poll-option"
-                    value={opt.id}
-                    checked={isSelected}
-                    disabled={submitting}
-                    onChange={() => setSelected(opt.id)}
-                    style={{ accentColor: colors.primary }}
-                  />
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: isSelected ? colors.primary : colors.textPrimary, overflowWrap: 'anywhere' }}
-                  >
-                    {opt.text}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
+                  {opt.text}
+                </span>
+              </label>
+            );
+          })}
+        </div>
 
-          {voteError && (
-            <p role="alert" className="text-sm mb-4" style={{ color: '#C0392B' }}>
-              {voteError}
-            </p>
-          )}
+        <Footnote voteCount={poll.totalVoteCount} />
 
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            aria-busy={submitting}
-            className="w-full py-2.5 rounded-lg font-semibold text-sm mb-3"
-            style={{
-              background: canSubmit ? colors.primary : colors.border,
-              color: canSubmit ? colors.textWhite : colors.textSubtle,
-              cursor: canSubmit ? 'pointer' : 'not-allowed',
-            }}
-          >
-            {submitting ? 'Submitting…' : 'Submit Vote'}
-          </button>
-          {shareButton}
-        </>,
-      )}
+        {voteError && (
+          <p role="alert" style={{ margin: 0, fontSize: 14, color: app.error }}>
+            {voteError}
+          </p>
+        )}
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          aria-busy={submitting}
+          style={{
+            ...buttonBase,
+            border: 'none',
+            background: canSubmit ? app.primary : app.mist,
+            color: canSubmit ? '#fff' : app.muted,
+            cursor: canSubmit ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {submitting ? 'Submitting…' : 'Submit Vote'}
+        </button>
+        {shareButton}
+      </Card>
     </Shell>
   );
 }
