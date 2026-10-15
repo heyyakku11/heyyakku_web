@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Landing } from './pages/Landing.tsx';
 import { Poll } from './pages/Poll.tsx';
+import { Vote } from './pages/Vote.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { applyDesignTokensToCss } from './design-tokens.js';
 
@@ -16,6 +17,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/p/:pollId" element={<Poll />} />
+        <Route path="/vote/:pollId" element={<Vote />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
