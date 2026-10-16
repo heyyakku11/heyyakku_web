@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.yakku",
+      "sha256_cert_fingerprints": [
+        "B7:99:7D:1C:6C:0B:55:03:5F:62:68:73:B9:2C:9B:38:12:7E:8D:3D:91:CF:35:FE:2E:DF:65:CF:A0:84:E7:8C"
+      ]
+    }
+  }
+]
