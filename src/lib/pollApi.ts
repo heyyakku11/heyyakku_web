@@ -13,6 +13,8 @@ export interface PollOptionDto {
 
 export interface PollDto {
   id: string;
+  /** Opaque code carried by shared links (`/vote/{shareCode}`). */
+  shareCode: string;
   question: string;
   status: string;
   visibility: string;
@@ -43,6 +45,18 @@ export type VotePhase = 'votable' | 'expired' | 'closed' | 'unavailable';
 
 export function isUuid(value: string | undefined): value is string {
   return !!value && UUID_RE.test(value);
+}
+
+// Matches the app's PollDeepLink: case-sensitive letters and digits, 6-64 long.
+const SHARE_CODE_RE = /^[A-Za-z0-9]{6,64}$/;
+
+export function isShareCode(value: string | undefined): value is string {
+  return !!value && SHARE_CODE_RE.test(value);
+}
+
+/** A `/vote/:ref` segment is either a share code (app links) or a legacy poll UUID. */
+export function isPollRef(value: string | undefined): value is string {
+  return isUuid(value) || isShareCode(value);
 }
 
 function apiBase(): string {
@@ -83,6 +97,7 @@ export function parsePoll(body: unknown): PollDto | null {
   options.sort((a, b) => a.sortOrder - b.sortOrder);
   return {
     id: d.id,
+    shareCode: typeof d.shareCode === 'string' ? d.shareCode : '',
     question: d.question,
     status: String(d.status ?? ''),
     visibility: String(d.visibility ?? ''),
@@ -95,9 +110,13 @@ export function parsePoll(body: unknown): PollDto | null {
   };
 }
 
-export async function fetchPoll(pollId: string, signal?: AbortSignal): Promise<PollLoadResult> {
+/** Loads a poll from a share code or a poll UUID, whichever the link carried. */
+export async function fetchPoll(pollRef: string, signal?: AbortSignal): Promise<PollLoadResult> {
+  const path = isUuid(pollRef)
+    ? `/api/v1/polls/${pollRef}`
+    : `/api/v1/polls/share/${encodeURIComponent(pollRef)}`;
   try {
-    const res = await fetch(`${apiBase()}/api/v1/polls/${pollId}`, {
+    const res = await fetch(`${apiBase()}${path}`, {
       headers: { Accept: 'application/json' },
       signal,
     });
@@ -137,12 +156,13 @@ export async function submitVote(pollId: string, optionId: string): Promise<Vote
   }
 }
 
-export function publicPollUrl(pollId: string): string {
-  const origin = (import.meta.env.VITE_PUBLIC_SITE_URL ?? window.location.origin).replace(/\/+$/, '');
-  return `${origin}/poll/${pollId}`;
+/** Canonical shared link: the same `/vote/{shareCode}` URL the app produces. */
+export function publicPollUrl(poll: Pick<PollDto, 'id' | 'shareCode'>): string {
+  const origin = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '');
+  return `${origin}/vote/${poll.shareCode || poll.id}`;
 }
 
-export function whatsAppShareUrl(question: string, pollId: string): string {
-  const text = `${question}\n${publicPollUrl(pollId)}`;
+export function whatsAppShareUrl(poll: Pick<PollDto, 'id' | 'shareCode' | 'question'>): string {
+  const text = `${poll.question}\n${publicPollUrl(poll)}`;
   return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }

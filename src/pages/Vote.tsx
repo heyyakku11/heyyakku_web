@@ -5,7 +5,7 @@ import { Footer } from '../components/Footer.tsx';
 import {
   fetchPoll,
   getVotePhase,
-  isUuid,
+  isPollRef,
   submitVote,
   whatsAppShareUrl,
   type PollDto,
@@ -127,7 +127,7 @@ function Footnote({ voteCount }: { voteCount: number }) {
 }
 
 export function Vote() {
-  const { pollId } = useParams<{ pollId: string }>();
+  const { pollId: pollRef } = useParams<{ pollId: string }>();
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -137,16 +137,16 @@ export function Vote() {
   const inFlight = useRef(false);
 
   useEffect(() => {
-    if (!isUuid(pollId)) return;
+    if (!isPollRef(pollRef)) return;
     const controller = new AbortController();
-    fetchPoll(pollId, controller.signal).then((result) => {
+    fetchPoll(pollRef, controller.signal).then((result) => {
       if (controller.signal.aborted) return;
       setState(result.kind === 'ok' ? result : { kind: result.kind });
     });
     return () => controller.abort();
-  }, [pollId, reloadKey]);
+  }, [pollRef, reloadKey]);
 
-  if (!isUuid(pollId)) {
+  if (!isPollRef(pollRef)) {
     return (
       <Shell>
         <Notice title="Poll not found" body="This poll may have been removed or the link might be broken." />
@@ -222,7 +222,7 @@ export function Vote() {
 
   const shareButton = (
     <a
-      href={whatsAppShareUrl(poll.question, poll.id)}
+      href={whatsAppShareUrl(poll)}
       target="_blank"
       rel="noopener noreferrer"
       style={{ ...buttonBase, border: `1.5px solid ${app.primary}`, color: app.primary, background: app.card }}

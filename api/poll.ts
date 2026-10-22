@@ -11,6 +11,7 @@ const SITE_NAME = 'Yakku';
 
 export interface SharedPoll {
   id: string;
+  shareCode: string;
   question: string;
   status: string;
   visibility: string;
@@ -19,6 +20,11 @@ export interface SharedPoll {
 
 export function isUuid(value: unknown): value is string {
   return typeof value === 'string' && UUID_RE.test(value);
+}
+
+/** Share codes are letters and digits only (see the app's PollDeepLink). */
+export function isShareCode(value: unknown): value is string {
+  return typeof value === 'string' && /^[A-Za-z0-9]{6,64}$/.test(value);
 }
 
 export function escapeHtml(value: string): string {
@@ -57,6 +63,7 @@ export function parsePollEnvelope(body: unknown): SharedPoll | null {
 
   return {
     id: data.id,
+    shareCode: isShareCode(data.shareCode) ? data.shareCode : '',
     question: data.question,
     status: String(data.status ?? '').toLowerCase(),
     visibility: String(data.visibility ?? '').toLowerCase(),
@@ -76,7 +83,7 @@ export function renderPreviewHtml(opts: {
 }): string {
   const { poll, pollId, siteUrl } = opts;
   const pollUrl = `${siteUrl}/poll/${pollId}`;
-  const voteUrl = `${siteUrl}/vote/${pollId}`;
+  const voteUrl = `${siteUrl}/vote/${poll?.shareCode || pollId}`;
 
   const title = poll ? truncate(poll.question, 120) : `${SITE_NAME} — Anonymous Polling`;
   const description = !poll
@@ -138,11 +145,12 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const siteUrl = resolveSiteUrl(req);
   const rawId = new URL(req.url ?? '/', 'http://localhost').searchParams.get('id');
 
-  if (!isUuid(rawId)) {
+  if (!isUuid(rawId) && !isShareCode(rawId)) {
     send(res, 404, renderPreviewHtml({ poll: null, pollId: '', siteUrl }), 'public, s-maxage=60');
     return;
   }
-  const pollId = rawId.toLowerCase();
+  // UUIDs are case-insensitive; share codes are not.
+  const pollId = isUuid(rawId) ? rawId.toLowerCase() : rawId;
   const apiBase = (process.env.POLL_API_BASE_URL ?? process.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   const generic = renderPreviewHtml({ poll: null, pollId, siteUrl });
 
@@ -153,10 +161,15 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   try {
-    const upstream = await fetch(`${apiBase}/api/v1/polls/${pollId}`, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-    });
+    const upstream = await fetch(
+      isUuid(pollId)
+        ? `${apiBase}/api/v1/polls/${pollId}`
+        : `${apiBase}/api/v1/polls/share/${encodeURIComponent(pollId)}`,
+      {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      },
+    );
     if (upstream.status === 404) {
       send(res, 404, generic, 'public, s-maxage=60');
       return;
@@ -166,7 +179,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       return;
     }
     const poll = parsePollEnvelope(await upstream.json());
-    if (!poll || poll.id.toLowerCase() !== pollId || !isShareable(poll)) {
+    if (!poll || (isUuid(pollId) ? poll.id.toLowerCase() !== pollId : poll.shareCode !== pollId) || !isShareable(poll)) {
       // Private/draft/malformed: reveal nothing about the poll.
       send(res, poll ? 404 : 200, generic, poll ? 'public, s-maxage=60' : 'no-store');
       return;
