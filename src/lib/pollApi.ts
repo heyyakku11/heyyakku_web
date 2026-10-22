@@ -17,9 +17,19 @@ export interface PollDto {
   status: string;
   visibility: string;
   expiresAt: string | null;
+  /** While results are locked this is the vote progress, not the full total. */
   totalVoteCount: number;
+  /** Votes from others needed before the backend reveals results. */
+  minVotes: number;
+  /** Votes from others so far (the creator's own vote isn't counted). */
+  voteProgress: number;
+  /** False below `minVotes`: option counts and percentages are then zeroed by the API. */
+  resultsUnlocked: boolean;
   options: PollOptionDto[];
 }
+
+/** Used when an older API response omits `minVotes`. */
+export const DEFAULT_MIN_VOTES = 5;
 
 export type PollLoadResult =
   | { kind: 'ok'; poll: PollDto }
@@ -78,6 +88,9 @@ export function parsePoll(body: unknown): PollDto | null {
     visibility: String(d.visibility ?? ''),
     expiresAt: typeof d.expiresAt === 'string' ? d.expiresAt : null,
     totalVoteCount: Number(d.totalVoteCount ?? 0),
+    minVotes: Number(d.minVotes ?? DEFAULT_MIN_VOTES),
+    voteProgress: Number(d.voteProgress ?? 0),
+    resultsUnlocked: d.resultsUnlocked === true,
     options,
   };
 }
