@@ -10,11 +10,11 @@ const DEFAULT_IMAGE_PATH = '/yakku_hero.png';
 const SITE_NAME = 'Yakku';
 
 export interface SharedPoll {
+  /** Poll or check id (`contentId`). */
   id: string;
   shareCode: string;
   question: string;
   status: string;
-  visibility: string;
   imageUrl: string | null;
 }
 
@@ -41,17 +41,18 @@ function truncate(value: string, max: number): string {
   return chars.length <= max ? chars.join('') : `${chars.slice(0, max - 1).join('')}…`;
 }
 
-/** Reads the poll from the `{ success, data }` envelope; returns null when malformed. */
+/** Reads the shared poll/check from the `{ success, data }` envelope; returns null when malformed. */
 export function parsePollEnvelope(body: unknown): SharedPoll | null {
   if (!body || typeof body !== 'object') return null;
   const envelope = body as { success?: unknown; data?: unknown };
   if (envelope.success !== true || !envelope.data || typeof envelope.data !== 'object') return null;
   const data = envelope.data as Record<string, unknown>;
-  if (!isUuid(data.id)) return null;
+  if (!isUuid(data.contentId)) return null;
   if (typeof data.question !== 'string' || data.question.trim() === '') return null;
 
   let imageUrl: string | null = null;
-  const media = data.media as { mediaType?: unknown; url?: unknown } | null | undefined;
+  const poll = data.poll as { media?: { mediaType?: unknown; url?: unknown } | null } | null | undefined;
+  const media = poll?.media;
   if (
     media &&
     typeof media.url === 'string' &&
@@ -62,18 +63,17 @@ export function parsePollEnvelope(body: unknown): SharedPoll | null {
   }
 
   return {
-    id: data.id,
+    id: data.contentId,
     shareCode: isShareCode(data.shareCode) ? data.shareCode : '',
     question: data.question,
     status: String(data.status ?? '').toLowerCase(),
-    visibility: String(data.visibility ?? '').toLowerCase(),
     imageUrl,
   };
 }
 
-/** Only public, published polls may be exposed through unauthenticated metadata. */
+/** Only published polls/checks may be exposed through unauthenticated metadata. */
 export function isShareable(poll: SharedPoll): boolean {
-  return poll.visibility === 'public' && poll.status !== 'draft' && poll.status !== '';
+  return poll.status !== 'draft' && poll.status !== '';
 }
 
 export function renderPreviewHtml(opts: {
@@ -145,12 +145,12 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const siteUrl = resolveSiteUrl(req);
   const rawId = new URL(req.url ?? '/', 'http://localhost').searchParams.get('id');
 
-  if (!isUuid(rawId) && !isShareCode(rawId)) {
+  // Polls and checks are addressed by share code only; the old UUID lookup no longer exists.
+  if (!isShareCode(rawId)) {
     send(res, 404, renderPreviewHtml({ poll: null, pollId: '', siteUrl }), 'public, s-maxage=60');
     return;
   }
-  // UUIDs are case-insensitive; share codes are not.
-  const pollId = isUuid(rawId) ? rawId.toLowerCase() : rawId;
+  const pollId = rawId;
   const apiBase = (process.env.POLL_API_BASE_URL ?? process.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   const generic = renderPreviewHtml({ poll: null, pollId, siteUrl });
 
@@ -161,15 +161,10 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   try {
-    const upstream = await fetch(
-      isUuid(pollId)
-        ? `${apiBase}/api/v1/polls/${pollId}`
-        : `${apiBase}/api/v1/polls/share/${encodeURIComponent(pollId)}`,
-      {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-      },
-    );
+    const upstream = await fetch(`${apiBase}/api/v1/shares/${encodeURIComponent(pollId)}`, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    });
     if (upstream.status === 404) {
       send(res, 404, generic, 'public, s-maxage=60');
       return;
@@ -179,8 +174,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       return;
     }
     const poll = parsePollEnvelope(await upstream.json());
-    if (!poll || (isUuid(pollId) ? poll.id.toLowerCase() !== pollId : poll.shareCode !== pollId) || !isShareable(poll)) {
-      // Private/draft/malformed: reveal nothing about the poll.
+    if (!poll || poll.shareCode !== pollId || !isShareable(poll)) {
+      // Draft/malformed: reveal nothing about the poll.
       send(res, poll ? 404 : 200, generic, poll ? 'public, s-maxage=60' : 'no-store');
       return;
     }
