@@ -7,9 +7,11 @@ import {
   getVotePhase,
   isPollRef,
   submitVote,
-  whatsAppShareUrl,
   type PollDto,
+  type VoteChoice,
 } from '../lib/pollApi.ts';
+
+const CUSTOM_ID = '__custom__';
 
 type LoadState = { kind: 'loading' } | { kind: 'not-found' } | { kind: 'error' } | { kind: 'ok'; poll: PollDto };
 
@@ -131,6 +133,7 @@ export function Vote() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [customAnswer, setCustomAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [voted, setVoted] = useState(false);
   const [voteError, setVoteError] = useState<string | null>(null);
@@ -195,11 +198,15 @@ export function Vote() {
   }
 
   const handleSubmit = async () => {
-    if (!selected || inFlight.current || voted) return;
+    const custom = customAnswer.trim();
+    let choice: VoteChoice | null = null;
+    if (selected === CUSTOM_ID) choice = custom ? { customAnswer: custom } : null;
+    else if (selected) choice = { optionId: selected };
+    if (!choice || inFlight.current || voted) return;
     inFlight.current = true;
     setSubmitting(true);
     setVoteError(null);
-    const result = await submitVote(poll.id, selected);
+    const result = await submitVote(poll.id, choice);
     inFlight.current = false;
     setSubmitting(false);
     switch (result.kind) {
@@ -207,7 +214,7 @@ export function Vote() {
         setVoted(true);
         break;
       case 'auth-required':
-        setVoteError('Voting requires a signed-in Yakku account. Please vote from the Yakku app.');
+        setVoteError('Your vote could not be accepted right now. Please try again in a moment.');
         break;
       case 'conflict':
         setVoteError(result.message ?? "You can't vote on this poll again, or it is no longer open.");
@@ -219,17 +226,6 @@ export function Vote() {
         setVoteError('Your vote could not be submitted. Please try again.');
     }
   };
-
-  const shareButton = (
-    <a
-      href={whatsAppShareUrl(poll)}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ ...buttonBase, border: `1.5px solid ${app.primary}`, color: app.primary, background: app.card }}
-    >
-      Share on WhatsApp
-    </a>
-  );
 
   const question = (
     <h1
@@ -254,7 +250,6 @@ export function Vote() {
           <p role="status" style={{ margin: '4px 0', fontSize: 14, fontWeight: 600, color: app.primary }}>
             ✓ Your vote has been submitted. Thanks for voting!
           </p>
-          {shareButton}
         </Card>
       </Shell>
     );
@@ -270,13 +265,12 @@ export function Vote() {
             available.
           </p>
           <Footnote voteCount={poll.totalVoteCount} />
-          {shareButton}
         </Card>
       </Shell>
     );
   }
 
-  const canSubmit = !!selected && !submitting;
+  const canSubmit = (selected === CUSTOM_ID ? customAnswer.trim() !== '' : !!selected) && !submitting;
   return (
     <Shell>
       <Card>
@@ -323,6 +317,52 @@ export function Vote() {
               </label>
             );
           })}
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: 12,
+              borderRadius: app.radius,
+              cursor: submitting ? 'default' : 'pointer',
+              background: selected === CUSTOM_ID ? app.primaryTint : app.surface,
+              border: `1.5px solid ${selected === CUSTOM_ID ? app.primary : 'transparent'}`,
+              boxSizing: 'border-box',
+            }}
+          >
+            <input
+              type="radio"
+              name="poll-option"
+              value={CUSTOM_ID}
+              checked={selected === CUSTOM_ID}
+              disabled={submitting}
+              onChange={() => setSelected(CUSTOM_ID)}
+              style={{ accentColor: app.primary, width: 18, height: 18, margin: 0, flexShrink: 0 }}
+            />
+            <input
+              type="text"
+              value={customAnswer}
+              maxLength={200}
+              disabled={submitting}
+              placeholder="Write your own answer"
+              aria-label="Write your own answer"
+              onFocus={() => setSelected(CUSTOM_ID)}
+              onChange={(e) => {
+                setCustomAnswer(e.target.value);
+                setSelected(CUSTOM_ID);
+              }}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                fontFamily: app.font,
+                fontSize: 14,
+                color: app.text,
+              }}
+            />
+          </label>
         </div>
 
         <Footnote voteCount={poll.totalVoteCount} />
@@ -348,7 +388,6 @@ export function Vote() {
         >
           {submitting ? 'Submitting…' : 'Submit Vote'}
         </button>
-        {shareButton}
       </Card>
     </Shell>
   );

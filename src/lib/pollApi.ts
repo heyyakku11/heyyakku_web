@@ -95,6 +95,7 @@ export function parsePoll(body: unknown): PollDto | null {
     });
   }
   options.sort((a, b) => a.sortOrder - b.sortOrder);
+  const userOptions = options.filter((o) => o.text !== null && o.text.trim() !== '');
   return {
     id: d.id,
     shareCode: typeof d.shareCode === 'string' ? d.shareCode : '',
@@ -106,7 +107,7 @@ export function parsePoll(body: unknown): PollDto | null {
     minVotes: Number(d.minVotes ?? DEFAULT_MIN_VOTES),
     voteProgress: Number(d.voteProgress ?? 0),
     resultsUnlocked: d.resultsUnlocked === true,
-    options,
+    options: userOptions,
   };
 }
 
@@ -129,16 +130,58 @@ export async function fetchPoll(pollRef: string, signal?: AbortSignal): Promise<
   }
 }
 
-// POST /api/v1/polls/{id}/votes  body: { pollOptionId }
-// The endpoint is [Authorize]d (JWT bearer) on the backend; there is no web
-// sign-in flow yet, so an unauthenticated call surfaces as `auth-required`.
-export async function submitVote(pollId: string, optionId: string): Promise<VoteResult> {
+export type VoteChoice = { optionId: string } | { customAnswer: string };
+
+const GUEST_TOKEN_KEY = 'yakku_guest_token';
+
+function readGuestToken(): string | null {
   try {
+    return localStorage.getItem(GUEST_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns a guest token for visitors without a Yakku account: the stored one, or a new guest identity
+ * from POST /api/v1/guests. The API only returns the raw token when it creates a guest.
+ */
+async function ensureGuestToken(): Promise<string | null> {
+  const existing = readGuestToken();
+  if (existing) return existing;
+  try {
+    const res = await fetch(`${apiBase()}/api/v1/guests`, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { data?: { guestToken?: unknown } };
+    const token = body.data?.guestToken;
+    if (typeof token !== 'string' || !token) return null;
+    try {
+      localStorage.setItem(GUEST_TOKEN_KEY, token);
+    } catch {
+      /* storage unavailable: the token still works for this page view */
+    }
+    return token;
+  } catch {
+    return null;
+  }
+}
+
+// POST /api/v1/polls/{id}/votes  body: { pollOptionId } or { customAnswer }
+// Visitors vote as guests (X-Guest-Token); the backend decides whether the vote is valid.
+export async function submitVote(pollId: string, choice: VoteChoice): Promise<VoteResult> {
+  try {
+    const guestToken = await ensureGuestToken();
+    const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'application/json' };
+    if (guestToken) headers['X-Guest-Token'] = guestToken;
     const res = await fetch(`${apiBase()}/api/v1/polls/${pollId}/votes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers,
       credentials: 'include',
-      body: JSON.stringify({ pollOptionId: optionId }),
+      body: JSON.stringify('optionId' in choice ? { pollOptionId: choice.optionId } : { customAnswer: choice.customAnswer }),
     });
     if (res.ok) return { kind: 'ok' };
     if (res.status === 401 || res.status === 403) return { kind: 'auth-required' };
@@ -154,15 +197,4 @@ export async function submitVote(pollId: string, optionId: string): Promise<Vote
   } catch {
     return { kind: 'error' };
   }
-}
-
-/** Canonical shared link: the same `/vote/{shareCode}` URL the app produces. */
-export function publicPollUrl(poll: Pick<PollDto, 'id' | 'shareCode'>): string {
-  const origin = (import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '');
-  return `${origin}/vote/${poll.shareCode || poll.id}`;
-}
-
-export function whatsAppShareUrl(poll: Pick<PollDto, 'id' | 'shareCode' | 'question'>): string {
-  const text = `${poll.question}\n${publicPollUrl(poll)}`;
-  return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
