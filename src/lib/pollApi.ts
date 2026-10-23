@@ -172,7 +172,7 @@ async function ensureGuestToken(): Promise<string | null> {
 
 // POST /api/v1/polls/{id}/votes  body: { pollOptionId } or { customAnswer }
 // Visitors vote as guests (X-Guest-Token); the backend decides whether the vote is valid.
-export async function submitVote(pollId: string, choice: VoteChoice): Promise<VoteResult> {
+export async function submitVote(pollId: string, choice: VoteChoice, reason?: string): Promise<VoteResult> {
   try {
     const guestToken = await ensureGuestToken();
     const headers: Record<string, string> = { 'Content-Type': 'application/json', Accept: 'application/json' };
@@ -181,7 +181,10 @@ export async function submitVote(pollId: string, choice: VoteChoice): Promise<Vo
       method: 'POST',
       headers,
       credentials: 'include',
-      body: JSON.stringify('optionId' in choice ? { pollOptionId: choice.optionId } : { customAnswer: choice.customAnswer }),
+      body: JSON.stringify({
+        ...('optionId' in choice ? { pollOptionId: choice.optionId } : { customAnswer: choice.customAnswer }),
+        ...(reason?.trim() ? { reason: reason.trim() } : {}),
+      }),
     });
     if (res.ok) return { kind: 'ok' };
     if (res.status === 401 || res.status === 403) return { kind: 'auth-required' };

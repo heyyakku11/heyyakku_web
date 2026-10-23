@@ -12,6 +12,7 @@ import {
 } from '../lib/pollApi.ts';
 
 const CUSTOM_ID = '__custom__';
+const REASON_MAX = 150;
 
 type LoadState = { kind: 'loading' } | { kind: 'not-found' } | { kind: 'error' } | { kind: 'ok'; poll: PollDto };
 
@@ -128,6 +129,49 @@ function Footnote({ voteCount }: { voteCount: number }) {
   );
 }
 
+function Results({ poll, yourOptionId }: { poll: PollDto; yourOptionId: string | null }) {
+  if (!poll.resultsUnlocked) {
+    const needed = Math.max(poll.minVotes, 1);
+    return (
+      <p style={{ margin: 0, fontSize: 14, color: app.muted, lineHeight: 1.4 }}>
+        Results unlock after {needed} votes from others ({Math.min(poll.voteProgress, needed)}/{needed} so far).
+      </p>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {poll.options.map((opt) => {
+        const pct = Math.round(opt.percentage);
+        const mine = opt.id === yourOptionId;
+        return (
+          <div
+            key={opt.id}
+            style={{
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: app.radius,
+              background: app.surface,
+              border: `1.5px solid ${mine ? app.primary : 'transparent'}`,
+            }}
+          >
+            <div
+              style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: app.primaryTint }}
+              aria-hidden="true"
+            />
+            <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', gap: 8, padding: 12 }}>
+              <span style={{ fontSize: 14, color: app.text, fontWeight: mine ? 600 : 400, overflowWrap: 'anywhere' }}>
+                {opt.text}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: app.text }}>{pct}%</span>
+            </div>
+          </div>
+        );
+      })}
+      <Footnote voteCount={poll.totalVoteCount} />
+    </div>
+  );
+}
+
 export function Vote() {
   const { pollId: pollRef } = useParams<{ pollId: string }>();
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
@@ -136,6 +180,8 @@ export function Vote() {
   const [customAnswer, setCustomAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [voted, setVoted] = useState(false);
+  const [reason, setReason] = useState('');
+  const [results, setResults] = useState<PollDto | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
   const inFlight = useRef(false);
 
@@ -206,12 +252,15 @@ export function Vote() {
     inFlight.current = true;
     setSubmitting(true);
     setVoteError(null);
-    const result = await submitVote(poll.id, choice);
+    const result = await submitVote(poll.id, choice, reason);
     inFlight.current = false;
     setSubmitting(false);
     switch (result.kind) {
       case 'ok':
         setVoted(true);
+        fetchPoll(pollRef).then((r) => {
+          if (r.kind === 'ok') setResults(r.poll);
+        });
         break;
       case 'auth-required':
         setVoteError('Your vote could not be accepted right now. Please try again in a moment.');
@@ -250,6 +299,7 @@ export function Vote() {
           <p role="status" style={{ margin: '4px 0', fontSize: 14, fontWeight: 600, color: app.primary }}>
             ✓ Your vote has been submitted. Thanks for voting!
           </p>
+          <Results poll={results ?? poll} yourOptionId={selected} />
         </Card>
       </Shell>
     );
@@ -364,6 +414,39 @@ export function Vote() {
             />
           </label>
         </div>
+
+        {selected && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label htmlFor="vote-reason" style={{ fontSize: 13, fontWeight: 700, color: app.text }}>
+              What made you choose this?{' '}
+              <span style={{ fontWeight: 400, color: app.muted }}>Anonymous · Optional</span>
+            </label>
+            <textarea
+              id="vote-reason"
+              value={reason}
+              maxLength={REASON_MAX}
+              rows={3}
+              disabled={submitting}
+              onChange={(e) => setReason(e.target.value)}
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                resize: 'none',
+                padding: 12,
+                borderRadius: app.radius,
+                border: `1.5px solid ${app.mist}`,
+                background: app.card,
+                fontFamily: app.font,
+                fontSize: 14,
+                color: app.text,
+                outline: 'none',
+              }}
+            />
+            <span style={{ alignSelf: 'flex-end', fontSize: 12, color: app.muted }}>
+              {reason.length} / {REASON_MAX}
+            </span>
+          </div>
+        )}
 
         <Footnote voteCount={poll.totalVoteCount} />
 
