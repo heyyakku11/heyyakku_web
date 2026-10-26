@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { VoteForm, VoteOutcome, CUSTOM_ID } from '../components/VoteCard.tsx';
+import { WeeklyChecks } from '../components/WeeklyChecks.tsx';
 import {
   fetchSharedContent,
   getVotePhase,
@@ -236,6 +237,7 @@ export function Vote() {
           content={results ?? content}
           notice={voted ? '✓ Your vote has been submitted. Thanks for voting!' : "✓ You've already voted on this."}
         />
+        <WeeklyChecks />
       </Shell>
     );
   }

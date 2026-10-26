@@ -5,7 +5,10 @@
 //   GET  /api/v1/shares/{code}    resolve a share code to a poll or a check
 //   POST /api/v1/votes            vote by share code (poll or check)
 //
-// Visitors act as guests: the stored guest token is sent as `X-Guest-Token`.
+// Visitors act as guests: the stored guest token is sent as `X-Guest-Token`. Signed-in users send their
+// bearer token instead (see authStore.ts).
+
+import { getAccessToken } from './authStore.ts';
 
 export type ContentType = 'POLL' | 'CHECK';
 
@@ -90,7 +93,7 @@ export function isShareCode(value: string | undefined): value is string {
   return !!value && SHARE_CODE_RE.test(value);
 }
 
-function apiBase(): string {
+export function apiBase(): string {
   return (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
 }
 
@@ -243,7 +246,8 @@ function clearGuestToken(): void {
  * Returns a guest token for visitors without a Yakku account: the stored one, or a new guest identity
  * from POST /api/v1/guests. The API only returns the raw token when it creates a guest.
  */
-async function ensureGuestToken(): Promise<string | null> {
+export async function ensureGuestToken(): Promise<string | null> {
+  if (getAccessToken()) return null;
   const existing = readGuestToken();
   if (existing) return existing;
   try {
@@ -269,9 +273,11 @@ async function ensureGuestToken(): Promise<string | null> {
   }
 }
 
-function guestHeaders(token: string | null, extra: Record<string, string> = {}): Record<string, string> {
+export function guestHeaders(token: string | null, extra: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = { Accept: 'application/json', ...extra };
-  if (token) headers['X-Guest-Token'] = token;
+  const access = getAccessToken();
+  if (access) headers.Authorization = `Bearer ${access}`;
+  else if (token) headers['X-Guest-Token'] = token;
   return headers;
 }
 
