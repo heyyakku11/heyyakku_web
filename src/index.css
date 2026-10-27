@@ -530,24 +530,6 @@ svg {
   align-items: flex-start;
 }
 
-.faq-left-col {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-@media (min-width: 1024px) {
-  .faq-two-col-grid {
-    grid-template-columns: 440px 1fr;
-    gap: 64px;
-  }
-  .faq-left-col {
-    position: sticky;
-    top: 96px;
-    justify-content: space-between;
-    min-height: 480px;
-  }
-}
 
 /* Footer: brand stacked above 3-col nav on phones, 4-col layout from tablet up */
 .footer-inner {

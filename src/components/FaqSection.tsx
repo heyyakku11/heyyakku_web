@@ -53,61 +53,12 @@ export function FaqSection() {
       <div className="max-w-7xl mx-auto">
         {/* 2-Column Split Grid - Exact Match to Attached Reference UI */}
         <div className="faq-two-col-grid">
-          {/* Left Column: Top Title & Bottom Contact Block */}
-          <div className="faq-left-col">
-            <div>
-              <h2
-                className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[54px] leading-[1.08]"
-                style={{
-                  fontFamily: designTokens.typography.fontFamilies.heading,
-                  color: '#111111',
-                  letterSpacing: '-0.035em',
-                }}
-              >
-                General Questions
-                <br />
-                asked by customers.
-              </h2>
-            </div>
-
-            <div className="max-w-sm">
-              <p
-                className="text-sm md:text-base leading-relaxed mb-6"
-                style={{ color: '#4B5563' }}
-              >
-                Our friendly team is always here to help you with quick, clear, and reliable answers whenever needed.
-              </p>
-
-              <a
-                href="mailto:support@heyyakku.com"
-                className="inline-flex items-center justify-center px-8 py-3.5 rounded-full font-bold text-sm transition-all duration-200 cursor-pointer"
-                style={{
-                  background: '#111111',
-                  color: '#FFFFFF',
-                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.16)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#2A2A2A';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.22)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#111111';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.16)';
-                }}
-              >
-                Contact Yakku
-              </a>
-            </div>
-          </div>
-
-          {/* Right Column: Stacked White Cards with Clear Gaps */}
+          {/* Stacked White Cards with Clear Gaps */}
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '18px',
+              gap: '10px',
               width: '100%',
             }}
           >
@@ -119,7 +70,7 @@ export function FaqSection() {
                   key={faq.id}
                   style={{
                     background: '#FFFFFF',
-                    borderRadius: '18px',
+                    borderRadius: '8px',
                     border: '1px solid #E5E7EB',
                     boxShadow: isOpen
                       ? '0 6px 20px -2px rgba(0, 0, 0, 0.05)'
@@ -134,7 +85,7 @@ export function FaqSection() {
                     style={{
                       width: '100%',
                       textAlign: 'left',
-                      padding: '24px 28px',
+                      padding: '14px 20px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -158,57 +109,32 @@ export function FaqSection() {
                       {faq.question}
                     </span>
 
-                    {/* Circular Outline Icon: Minus (-) when Open, Plus (+) when Closed */}
-                    <span
+                    {/* Chevron arrow: points down when closed, rotates up when open */}
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        border: '1.5px solid #9CA3AF',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                         flexShrink: 0,
                         color: '#1F2937',
-                        transition: 'all 0.2s ease',
+                        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease',
                       }}
                     >
-                      {isOpen ? (
-                        /* Minus (-) icon */
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                        >
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      ) : (
-                        /* Plus (+) icon */
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                        >
-                          <line x1="12" y1="5" x2="12" y2="19" />
-                          <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                      )}
-                    </span>
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </button>
 
                   {/* Collapsible Answer Content */}
                   {isOpen && (
                     <div
                       style={{
-                        padding: '0 28px 26px 28px',
+                        padding: '0 20px 16px 20px',
                       }}
                       className="animate-fade-in"
                     >
