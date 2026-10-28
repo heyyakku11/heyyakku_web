@@ -7,7 +7,7 @@ const NAME_RE = /^.{2,}$/;
 const PHONE_RE = /^[6-9]\d{9}$/;
 
 /** The tilted pink card previewing the question, as in the app's AskPreviewCard. */
-export function AskPreviewCard({ question, bars }: { question: string; bars: number }) {
+export function AskPreviewCard({ question, options }: { question: string; options: string[] }) {
   return (
     <div
       style={{
@@ -27,8 +27,10 @@ export function AskPreviewCard({ question, bars }: { question: string; bars: num
         {question}
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {Array.from({ length: Math.min(Math.max(bars, 2), 4) }).map((_, i) => (
-          <div key={i} style={{ height: 14, borderRadius: 8, background: 'rgba(255,255,255,0.28)', width: `${90 - i * 14}%` }} />
+        {options.slice(0, 4).map((text, i) => (
+          <div key={i} style={{ height: 24, borderRadius: 8, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', padding: '0 10px', overflow: 'hidden' }}>
+            <span style={{ filter: 'blur(4px)', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{text}</span>
+          </div>
         ))}
       </div>
     </div>
@@ -101,7 +103,7 @@ export function AskLogin() {
         <button type="button" aria-label="Back" onClick={back} style={{ alignSelf: 'flex-start', background: 'none', border: 'none', fontSize: 26, cursor: 'pointer', color: ck.text, padding: 0 }}>
           ←
         </button>
-        <AskPreviewCard question={pending.check.question || pending.check.title} bars={pending.check.options.length} />
+        <AskPreviewCard question={pending.check.question || pending.check.title} options={pending.check.options.map((o) => o.text)} />
         <h1 style={{ margin: '18px 0 0', fontFamily: ck.heading, fontSize: 30, fontWeight: 800, color: ck.text }}>Who's asking?</h1>
 
         <label style={{ display: 'block' }}>

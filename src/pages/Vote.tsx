@@ -4,7 +4,6 @@ import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { VoteForm, VoteOutcome, CUSTOM_ID } from '../components/VoteCard.tsx';
 import { WeeklyChecks } from '../components/WeeklyChecks.tsx';
-import { OpenInApp } from '../components/OpenInApp.tsx';
 import {
   fetchSharedContent,
   getVotePhase,
@@ -257,7 +256,6 @@ export function Vote() {
 
   return (
     <Shell>
-      <OpenInApp shareCode={shareCode ?? ''} />
       <VoteForm
         content={content}
         form={{ selected, customAnswer, reason, submitting, error: voteError }}
