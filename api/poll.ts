@@ -133,7 +133,7 @@ function send(res: ServerResponse, status: number, html: string, cache: string):
 }
 
 function resolveSiteUrl(req: IncomingMessage): string {
-  const configured = process.env.PUBLIC_SITE_URL ?? process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const configured = process.env.VITE_WEBSITE_URL ?? process.env.VERCEL_PROJECT_PRODUCTION_URL;
   if (configured) {
     const withScheme = /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
     return withScheme.replace(/\/+$/, '');
@@ -151,11 +151,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return;
   }
   const pollId = rawId;
-  const apiBase = (process.env.POLL_API_BASE_URL ?? process.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+  const apiBase = (process.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   const generic = renderPreviewHtml({ poll: null, pollId, siteUrl });
 
   if (!apiBase) {
-    console.error('poll preview: POLL_API_BASE_URL is not configured');
+    console.error('poll preview: VITE_API_BASE_URL is not configured');
     send(res, 200, generic, 'no-store');
     return;
   }

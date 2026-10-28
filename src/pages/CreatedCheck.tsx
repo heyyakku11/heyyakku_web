@@ -4,7 +4,7 @@ import { DEFAULT_MIN_VOTES, loadMade } from '../lib/checkApi.ts';
 import { ck, primaryPill } from '../components/checkUi.tsx';
 
 function siteOrigin(): string {
-  const configured = (import.meta.env.VITE_PUBLIC_SITE_URL ?? '').replace(/\/+$/, '');
+  const configured = (import.meta.env.VITE_WEBSITE_URL ?? '').replace(/\/+$/, '');
   return configured || window.location.origin;
 }
 

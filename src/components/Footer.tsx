@@ -31,7 +31,7 @@ const FOOTER_SECTIONS = [
   },
   {
     title: 'Legal',
-    links: ['Privacy', 'Terms', 'Cookies'],
+    links: ['Privacy'],
   },
 ];
 
@@ -92,7 +92,7 @@ export function Footer({ minimal = false }: FooterProps) {
                   {section.links.map((link) => (
                     <li key={link} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       <a
-                        href={`#${link.toLowerCase()}`}
+                        href={link === 'Privacy' ? '/policy' : `#${link.toLowerCase()}`}
                         className="text-sm transition-colors duration-150 inline-block"
                         style={{
                           color: designTokens.colors.textMuted,
