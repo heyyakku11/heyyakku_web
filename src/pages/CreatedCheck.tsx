@@ -67,8 +67,10 @@ export function CreatedCheck() {
           <div style={{ fontFamily: ck.script, fontSize: 20, opacity: 0.9 }}>Yakku.</div>
           <p style={{ margin: '10px 0 14px', fontFamily: ck.heading, fontSize: 24, fontWeight: 800, lineHeight: 1.2 }}>{question}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-            {Array.from({ length: Math.min(Math.max(made?.optionTexts.length ?? 3, 2), 4) }).map((_, i) => (
-              <div key={i} style={{ height: 16, borderRadius: 9, background: 'rgba(255,255,255,0.28)', width: `${92 - i * 12}%` }} />
+            {(made?.optionTexts ?? []).slice(0, 4).map((text, i) => (
+              <div key={i} style={{ height: 30, borderRadius: 10, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', padding: '0 12px', overflow: 'hidden' }}>
+                <span style={{ filter: 'blur(4px)', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{text}</span>
+              </div>
             ))}
           </div>
           <p style={{ margin: '14px 0 0', fontSize: 12.5, opacity: 0.9 }}>Tap to answer. They won't know it was you.</p>
