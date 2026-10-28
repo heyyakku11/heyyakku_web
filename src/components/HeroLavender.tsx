@@ -5,8 +5,8 @@ export function HeroLavender() {
     <div
       className="absolute bottom-0 left-0 right-0 pointer-events-auto"
       style={{
-        height: '42%',
-        minHeight: 280,
+        height: '45%',
+        minHeight: 160,
         zIndex: 5, // Layer 1: Above base white hero section
       }}
     >
@@ -24,8 +24,7 @@ export function HeroLavender() {
         className="absolute pointer-events-none select-none"
         style={{
           bottom: '4%',
-          right: '10%',
-          transform: 'translateX(-50%)',
+          right: '6%',
           fontFamily: designTokens.typography.fontFamilies.brand,
           fontStyle: 'italic',
           fontSize: designTokens.typography.fontSizes.watermark,

@@ -81,8 +81,11 @@ export function Landing() {
           ========================================================================= */}
       <section
         id="download"
-        className="py-24 px-6 md:px-12 text-center relative overflow-hidden"
-        style={{ background: designTokens.colors.dark }}
+        className="px-6 md:px-12 text-center relative overflow-hidden"
+        style={{
+          background: designTokens.colors.dark,
+          paddingBlock: 'clamp(56px, 10vw, 96px)',
+        }}
       >
         {/* Ambient lavender radial light cone */}
         <div
@@ -95,8 +98,11 @@ export function Landing() {
 
         <div className="max-w-xl mx-auto relative">
           <p
-            className="text-xs font-bold tracking-widest uppercase mb-4"
-            style={{ color: designTokens.colors.primary }}
+            className="font-bold tracking-widest uppercase mb-4"
+            style={{
+              color: designTokens.colors.primary,
+              fontSize: 'clamp(11px, 0.3vw + 10px, 13px)',
+            }}
           >
             Have a question?
           </p>
@@ -105,6 +111,7 @@ export function Landing() {
             style={{
               fontFamily: designTokens.typography.fontFamilies.heading,
               fontSize: designTokens.typography.fontSizes.ctaHeading,
+              marginBottom: 'clamp(18px, 2.2vw, 30px)',
               letterSpacing: designTokens.typography.letterSpacings.tight,
             }}
           >
@@ -124,7 +131,10 @@ export function Landing() {
           </h2>
           <p
             className="text-base mb-10"
-            style={{ color: designTokens.colors.textWhiteMuted }}
+            style={{
+              color: designTokens.colors.textWhiteMuted,
+              fontSize: 'clamp(15px, 0.5vw + 13px, 18px)',
+            }}
           >
             Download the app and start creating anonymous polls in seconds.
           </p>
@@ -139,10 +149,13 @@ export function Landing() {
                 color: '#FFFFFF',
                 border: '1px solid #A6A6A6',
                 borderRadius: 8,
+                // Everything inside is sized in em, so the badge scales with this one font-size.
+                fontSize: 'clamp(13px, 1.4vw + 8px, 20px)',
                 width: 'auto',
+                height: '3.2em',
                 alignSelf: 'center',
-                padding: '0 20px 0 14px',
-                gap: 10,
+                padding: '0 1.1em 0 0.8em',
+                gap: '0.55em',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'scale(1.03)';
@@ -151,7 +164,7 @@ export function Landing() {
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <svg width="26" height="28" viewBox="0 0 24 24">
+              <svg style={{ width: '1.35em', height: '1.45em' }} viewBox="0 0 24 24">
                 <path fill="#00A0FF" d="M1.48 3.66a1.75 1.75 0 0 0-.48 1.23v14.22c0 .47.17.9.48 1.23l.07.06 7.96-7.96v-.19L1.55 3.6l-.07.06z" />
                 <path fill="#FFD500" d="M18.52 13.06l-2.72-1.61-2.84 2.84 2.84 2.84 2.73-1.62c.78-.46.78-1.99-.01-2.45z" />
                 <path fill="#FF3A44" d="M3.18 23.76c.3.17.64.22.98.14l11.65-6.9-2.52-2.52-10.11 9.28z" />
@@ -160,13 +173,13 @@ export function Landing() {
               <div className="text-left">
                 <p
                   className="leading-none uppercase"
-                  style={{ fontSize: 10, letterSpacing: '0.04em' }}
+                  style={{ fontSize: '0.5em', letterSpacing: '0.04em' }}
                 >
                   Get it on
                 </p>
                 <p
                   className="leading-tight"
-                  style={{ fontSize: 22, fontWeight: 500, marginTop: 2 }}
+                  style={{ fontSize: '1.1em', fontWeight: 500, marginTop: '0.1em' }}
                 >
                   Google Play
                 </p>
@@ -174,7 +187,12 @@ export function Landing() {
             </a>
           </div>
 
-          <p className="text-xs" style={{ color: designTokens.colors.textWhiteSubtle }}>
+          <p
+            style={{
+              color: designTokens.colors.textWhiteSubtle,
+              fontSize: 'clamp(11px, 0.3vw + 10px, 13px)',
+            }}
+          >
             Free to download · No ads · Anonymous by design
           </p>
         </div>

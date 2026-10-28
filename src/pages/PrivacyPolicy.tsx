@@ -32,7 +32,6 @@ function renderPolicy(md: string): ReactNode[] {
       return (
         <h3
           key={i}
-          className="text-lg font-bold mt-8 mb-3"
           style={{ fontFamily: headingFont, color: designTokens.colors.dark }}
         >
           {block.slice(4)}
@@ -43,7 +42,6 @@ function renderPolicy(md: string): ReactNode[] {
       return (
         <h2
           key={i}
-          className="text-2xl font-extrabold mt-12 mb-4"
           style={{
             fontFamily: headingFont,
             color: designTokens.colors.dark,
@@ -56,7 +54,7 @@ function renderPolicy(md: string): ReactNode[] {
     }
     if (block.startsWith('- ')) {
       return (
-        <ul key={i} className="list-disc pl-6 mb-4 flex flex-col gap-1.5">
+        <ul key={i}>
           {block.split('\n').map((line, j) => (
             <li key={j}>{renderInline(line.replace(/^- /, ''))}</li>
           ))}
@@ -64,7 +62,7 @@ function renderPolicy(md: string): ReactNode[] {
       );
     }
     return (
-      <p key={i} className="mb-4">
+      <p key={i}>
         {renderInline(block)}
       </p>
     );
@@ -96,13 +94,9 @@ export function PrivacyPolicy() {
   return (
     <div className="min-h-full flex flex-col" style={{ background: designTokens.colors.bgWhite }}>
       <Navbar minimal />
-      <main className="flex-1 px-6 md:px-12 pt-28 pb-20">
-        <article
-          className="mx-auto text-base leading-relaxed"
-          style={{ maxWidth: 760, color: designTokens.colors.textMuted }}
-        >
+      <main className="legal-main">
+        <article className="legal-article" style={{ color: designTokens.colors.textMuted }}>
           <h1
-            className="text-4xl sm:text-5xl font-extrabold leading-tight"
             style={{
               fontFamily: headingFont,
               color: designTokens.colors.dark,
@@ -111,7 +105,7 @@ export function PrivacyPolicy() {
           >
             Yakku Privacy Policy
           </h1>
-          <p className="mt-3 mb-2 text-sm">
+          <p className="legal-meta">
             <strong style={{ color: designTokens.colors.dark }}>Last Updated:</strong>{' '}
             {PRIVACY_POLICY_LAST_UPDATED}
           </p>
@@ -119,7 +113,6 @@ export function PrivacyPolicy() {
           {renderPolicy(PRIVACY_POLICY_MD)}
 
           <h2
-            className="text-2xl font-extrabold mt-12 mb-4"
             style={{
               fontFamily: headingFont,
               color: designTokens.colors.dark,
@@ -128,9 +121,9 @@ export function PrivacyPolicy() {
           >
             17. Contact Us
           </h2>
-          <p className="mb-4">{PRIVACY_POLICY_CONTACT_INTRO}</p>
+          <p>{PRIVACY_POLICY_CONTACT_INTRO}</p>
           {contactRows.map(([label, value]) => (
-            <p key={label} className="mb-3">
+            <p key={label}>
               <strong style={{ color: designTokens.colors.dark }}>{label}:</strong> {value}
             </p>
           ))}

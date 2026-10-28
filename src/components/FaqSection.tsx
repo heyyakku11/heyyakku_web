@@ -44,13 +44,14 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="py-24 px-6 md:px-12"
+      className="px-6 md:px-12"
       style={{
+        paddingBlock: 'clamp(48px, 9vw, 96px)',
         background: '#F8F9FA',
         borderTop: `1px solid ${designTokens.colors.border}`,
       }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto" style={{ maxWidth: 820 }}>
         {/* 2-Column Split Grid - Exact Match to Attached Reference UI */}
         <div className="faq-two-col-grid">
           {/* Stacked White Cards with Clear Gaps */}
@@ -100,7 +101,7 @@ export function FaqSection() {
                       style={{
                         fontFamily: designTokens.typography.fontFamilies.heading,
                         fontWeight: 700,
-                        fontSize: '17px',
+                        fontSize: 'clamp(15px, 0.5vw + 13px, 19px)',
                         lineHeight: 1.35,
                         color: '#111111',
                         paddingRight: '8px',
@@ -140,7 +141,7 @@ export function FaqSection() {
                     >
                       <p
                         style={{
-                          fontSize: '15px',
+                          fontSize: 'clamp(14px, 0.4vw + 12.5px, 16.5px)',
                           color: '#4B5563',
                           lineHeight: 1.65,
                           margin: 0,
