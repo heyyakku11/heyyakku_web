@@ -31,7 +31,10 @@ export function CreatedCheck() {
           <p style={{ margin: '14px 0 0', fontSize: 12.5, opacity: 0.9 }}>Tap to answer. They won't know it was you.</p>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginTop: 10 }}>
+          <p style={{ margin: 0, fontFamily: ck.heading, fontSize: 'clamp(17px, 1vw + 13px, 22px)', fontWeight: 800, color: ck.text }}>
+            Download Yakku app
+          </p>
           <GooglePlayBadge />
         </div>
       </div>
