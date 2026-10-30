@@ -2,6 +2,7 @@ import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { HeroLavender } from '../components/HeroLavender.tsx';
 import { FaqSection } from '../components/FaqSection.tsx';
+import { GooglePlayBadge } from '../components/GooglePlayBadge.tsx';
 import { designTokens } from '../design-tokens.js';
 
 export function Landing() {
@@ -140,51 +141,7 @@ export function Landing() {
           </p>
 
           <div className="cta-store-buttons">
-            <a
-              href="#google-play"
-              aria-label="Get it on Google Play"
-              className="cta-store-btn transition-all duration-200"
-              style={{
-                background: '#000000',
-                color: '#FFFFFF',
-                border: '1px solid #A6A6A6',
-                borderRadius: 8,
-                // Everything inside is sized in em, so the badge scales with this one font-size.
-                fontSize: 'clamp(13px, 1.4vw + 8px, 20px)',
-                width: 'auto',
-                height: '3.2em',
-                alignSelf: 'center',
-                padding: '0 1.1em 0 0.8em',
-                gap: '0.55em',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.03)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              <svg style={{ width: '1.35em', height: '1.45em' }} viewBox="0 0 24 24">
-                <path fill="#00A0FF" d="M1.48 3.66a1.75 1.75 0 0 0-.48 1.23v14.22c0 .47.17.9.48 1.23l.07.06 7.96-7.96v-.19L1.55 3.6l-.07.06z" />
-                <path fill="#FFD500" d="M18.52 13.06l-2.72-1.61-2.84 2.84 2.84 2.84 2.73-1.62c.78-.46.78-1.99-.01-2.45z" />
-                <path fill="#FF3A44" d="M3.18 23.76c.3.17.64.22.98.14l11.65-6.9-2.52-2.52-10.11 9.28z" />
-                <path fill="#00F076" d="M4.16.14C3.82.06 3.48.11 3.18.28L13.3 10.4l2.52-2.52L4.16.14z" />
-              </svg>
-              <div className="text-left">
-                <p
-                  className="leading-none uppercase"
-                  style={{ fontSize: '0.5em', letterSpacing: '0.04em' }}
-                >
-                  Get it on
-                </p>
-                <p
-                  className="leading-tight"
-                  style={{ fontSize: '1.1em', fontWeight: 500, marginTop: '0.1em' }}
-                >
-                  Google Play
-                </p>
-              </div>
-            </a>
+            <GooglePlayBadge />
           </div>
 
           <p
