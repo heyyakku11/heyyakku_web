@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { clearPending, loadPending, savePending, sendOtp } from '../lib/checkApi.ts';
 import { ck, primaryPill } from '../components/checkUi.tsx';
 
-const NAME_RE = /^.{2,}$/;
 const PHONE_RE = /^[6-9]\d{9}$/;
 
 /** The tilted pink card previewing the question, as in the app's AskPreviewCard. */
@@ -52,17 +51,15 @@ const field = (focus: boolean, bad: boolean): CSSProperties => ({
 export function AskLogin() {
   const navigate = useNavigate();
   const pending = loadPending();
-  const [name, setName] = useState(pending?.name ?? '');
   const [phone, setPhone] = useState(pending?.phone ?? '');
   const [adult, setAdult] = useState(true);
-  const [focus, setFocus] = useState<'name' | 'phone' | null>(null);
+  const [focus, setFocus] = useState<'phone' | null>(null);
   const [touched, setTouched] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!pending) return <Navigate to="/" replace />;
 
-  const nameBad = touched && !NAME_RE.test(name.trim());
   const phoneBad = touched && !PHONE_RE.test(phone);
 
   const back = () => {
@@ -75,19 +72,19 @@ export function AskLogin() {
   const submit = async () => {
     setTouched(true);
     setError(null);
-    if (!NAME_RE.test(name.trim()) || !PHONE_RE.test(phone)) return;
+    if (!PHONE_RE.test(phone)) return;
     if (!adult) {
       setError('You need to be 18 or older to use Yakku.');
       return;
     }
     setSending(true);
-    const result = await sendOtp(`+91${phone}`, name.trim());
+    const result = await sendOtp(`+91${phone}`);
     setSending(false);
     if (!result.ok) {
       setError(result.message);
       return;
     }
-    savePending({ ...pending, name: name.trim(), phone });
+    savePending({ ...pending, phone });
     navigate('/ask/otp');
   };
 
@@ -105,22 +102,6 @@ export function AskLogin() {
         </button>
         <AskPreviewCard question={pending.check.question || pending.check.title} options={pending.check.options.map((o) => o.text)} />
         <h1 style={{ margin: '18px 0 0', fontFamily: ck.heading, fontSize: 30, fontWeight: 800, color: ck.text }}>Who's asking?</h1>
-
-        <label style={{ display: 'block' }}>
-          <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: ck.muted, marginBottom: 6 }}>First name</span>
-          <div style={field(focus === 'name', nameBad)}>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onFocus={() => setFocus('name')}
-              onBlur={() => setFocus(null)}
-              autoComplete="given-name"
-              maxLength={40}
-              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: 16, fontFamily: ck.body, color: ck.text }}
-            />
-          </div>
-          {nameBad && <span style={{ color: ck.error, fontSize: 12.5 }}>Enter at least 2 characters.</span>}
-        </label>
 
         <label style={{ display: 'block' }}>
           <span style={{ display: 'block', fontSize: 13, fontWeight: 600, color: ck.muted, marginBottom: 6 }}>Phone number</span>

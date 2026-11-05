@@ -72,7 +72,7 @@ export function AskOtp() {
 
   const resend = async () => {
     setError(null);
-    const result = await sendOtp(`+91${phone}`, pending.name ?? '');
+    const result = await sendOtp(`+91${phone}`);
     if (result.ok) setResent(true);
     else setError(result.message);
   };

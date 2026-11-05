@@ -103,13 +103,13 @@ export async function fetchWeeklyChecks(signal?: AbortSignal): Promise<WeeklyChe
 
 export type AuthResult = { ok: true } | { ok: false; kind: 'invalid' | 'not-found' | 'too-many' | 'error'; message: string };
 
-export async function sendOtp(phoneNumber: string, name: string): Promise<AuthResult> {
+export async function sendOtp(phoneNumber: string): Promise<AuthResult> {
   try {
     const res = await fetch(`${apiBase()}/api/v1/auth/send`, {
       method: 'POST',
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ phoneNumber, name }),
+      body: JSON.stringify({ phoneNumber }),
     });
     if (res.ok) return { ok: true };
     const body = await readEnvelope(res);
@@ -242,7 +242,6 @@ export async function makeCheck(checkId: string, checkOptionId: string): Promise
 export interface PendingCheck {
   check: WeeklyCheck;
   optionId: string;
-  name?: string;
   phone?: string;
 }
 
