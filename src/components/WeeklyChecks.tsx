@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchWeeklyChecks, type WeeklyCheck } from '../lib/checkApi.ts';
-import { bgOf, ck, ShareIcon, Sticker } from './checkUi.tsx';
+import { ck, ShareIcon, Sticker } from './checkUi.tsx';
 
 // "This week's drop": every check in one uniform vertical list, shown under the voted card.
 
@@ -77,7 +77,7 @@ function CheckCard({ check, onOpen }: { check: WeeklyCheck; onOpen: () => void }
       style={{
         flex: '0 0 clamp(250px, 82%, 340px)',
         scrollSnapAlign: 'start',
-        background: bgOf(check.backgroundColor),
+        background: check.theme.background,
         borderRadius: 'clamp(18px, 5vw, 22px)',
         padding: 'clamp(12px, 4vw, 18px)',
         minWidth: 0,
@@ -90,15 +90,15 @@ function CheckCard({ check, onOpen }: { check: WeeklyCheck; onOpen: () => void }
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Sticker text={check.sticker} size={14} />
+        <Sticker text={check.theme.sticker} size={14} color={check.theme.stickerColor} />
       </div>
-      <h3 style={{ margin: 0, fontFamily: ck.heading, fontSize: 'clamp(20px, 6vw, 26px)', fontWeight: 800, color: ck.text, lineHeight: 1.15, overflowWrap: 'anywhere' }}>{check.title || check.question}</h3>
-      {check.question && check.question !== check.title && (
-        <p style={{ margin: 0, fontSize: 'clamp(15px, 4.5vw, 18px)', fontWeight: 800, color: ck.text, overflowWrap: 'anywhere', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{check.question}</p>
+      <h3 style={{ margin: 0, fontFamily: ck.heading, fontSize: 'clamp(20px, 6vw, 26px)', fontWeight: 800, color: check.theme.headingColor, lineHeight: 1.15, overflowWrap: 'anywhere' }}>{check.theme.heading || check.question}</h3>
+      {check.question && check.question !== check.theme.heading && (
+        <p style={{ margin: 0, fontSize: 'clamp(15px, 4.5vw, 18px)', fontWeight: 800, color: check.theme.questionColor, overflowWrap: 'anywhere', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{check.question}</p>
       )}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {check.options.map((o) => (
-          <span key={o.id} style={{ background: '#fff', borderRadius: 12, padding: '6px 10px', fontSize: 'clamp(12px, 3.5vw, 14px)', fontWeight: 600, color: ck.text, overflowWrap: 'anywhere', maxWidth: '100%' }}>{o.text}</span>
+          <span key={o.id} style={{ background: check.theme.optionBackground, borderRadius: 12, padding: '6px 10px', fontSize: 'clamp(12px, 3.5vw, 14px)', fontWeight: 600, color: check.theme.optionText, overflowWrap: 'anywhere', maxWidth: '100%' }}>{o.text}</span>
         ))}
       </div>
       <span style={{ marginTop: 'auto', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6, background: ck.ink, color: '#fff', borderRadius: 18, padding: '8px 14px', fontSize: 13, fontWeight: 700 }}>

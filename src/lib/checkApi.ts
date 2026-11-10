@@ -7,6 +7,7 @@
 //   POST /api/v1/checks/make     make a check from a weekly one (needs sign-in)
 
 import { apiBase, ensureGuestToken, guestHeaders } from './pollApi.ts';
+import { resolveCheckTheme, type CheckThemeView } from './checkTheme.ts';
 import {
   accessTokenStale,
   clearTokens,
@@ -24,6 +25,8 @@ export interface WeeklyCheck {
   sticker: string;
   options: { id: string; text: string }[];
   used: boolean;
+  /** Resolved from the backend theme; legacy checks get a theme derived from the fields above. */
+  theme: CheckThemeView;
 }
 
 export interface MadeCheck {
@@ -78,6 +81,11 @@ export function parseWeeklyChecks(body: unknown): WeeklyCheck[] | null {
       sticker: str(c.sticker),
       options,
       used: c.used === true,
+      theme: resolveCheckTheme(c.theme, {
+        title: str(c.title),
+        backgroundColor: str(c.backgroundColor),
+        sticker: str(c.sticker),
+      }),
     });
   }
   return out;

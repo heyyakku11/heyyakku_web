@@ -1,8 +1,9 @@
+import { resolveCheckTheme } from '../lib/checkTheme.ts';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { clearPending, fetchWeeklyChecks, makeCheck, saveMade, savePending, type WeeklyCheck } from '../lib/checkApi.ts';
 import { getAccessToken } from '../lib/authStore.ts';
-import { bgOf, ck, Eyebrow, LetterBadge, letter, primaryPill, ShareIcon, Sticker } from '../components/checkUi.tsx';
+import { ck, Eyebrow, LetterBadge, letter, primaryPill, ShareIcon, Sticker } from '../components/checkUi.tsx';
 
 // Mirrors check_detail_screen.dart: pick your own (secret) answer, then "Ask my friends".
 export function CheckDetail() {
@@ -46,9 +47,11 @@ export function CheckDetail() {
     return <p role="status" style={{ textAlign: 'center', padding: 48, fontFamily: ck.body, color: ck.muted }}>Loading…</p>;
   }
 
-  const bg = bgOf(check.backgroundColor);
-  const question = check.question && check.question.trim() !== check.title.trim() ? check.question : '';
-  const question0 = check.question || check.title;
+  // A check saved before themes existed (router state / pending sign-in) has no theme object.
+  const theme = check.theme ?? resolveCheckTheme(undefined, check);
+  const bg = theme.background;
+  const question = check.question && check.question.trim() !== theme.heading ? check.question : '';
+  const question0 = check.question || theme.heading;
 
   const send = async () => {
     if (!selected || sending) return;
@@ -96,12 +99,12 @@ export function CheckDetail() {
               <Eyebrow>THIS WEEK'S DROP</Eyebrow>
               <span style={{ fontSize: 13, color: ck.muted }}>Ends Sunday</span>
             </div>
-            <Sticker text={check.sticker} size={20} />
+            <Sticker text={theme.sticker} size={20} color={theme.stickerColor} />
           </div>
-          <h1 style={{ margin: 0, fontFamily: ck.heading, fontSize: 36, fontWeight: 800, letterSpacing: -0.8, lineHeight: 1.1, color: ck.text }}>
-            {check.title || question0}
+          <h1 style={{ margin: 0, fontFamily: ck.heading, fontSize: 36, fontWeight: 800, letterSpacing: -0.8, lineHeight: 1.1, color: theme.headingColor }}>
+            {theme.heading || question0}
           </h1>
-          {question && <p style={{ margin: 0, fontSize: 26, fontWeight: 600, color: ck.text, lineHeight: 1.2 }}>{question}</p>}
+          {question && <p style={{ margin: 0, fontSize: 26, fontWeight: 600, color: theme.questionColor, lineHeight: 1.2 }}>{question}</p>}
 
           <div role="radiogroup" aria-label="Your answer" style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 6 }}>
             {check.options.map((o, i) => {
@@ -123,9 +126,9 @@ export function CheckDetail() {
                     padding: '12px 14px',
                     borderRadius: 18,
                     border: `1.6px solid ${ck.ink}`,
-                    background: on ? ck.ink : '#fff',
-                    color: on ? '#fff' : ck.text,
-                    boxShadow: on ? `3px 3px 0 ${ck.accent}` : `3px 3px 0 ${ck.ink}`,
+                    background: on ? ck.ink : theme.optionBackground,
+                    color: on ? '#fff' : theme.optionText,
+                    boxShadow: on ? `3px 3px 0 ${theme.accent}` : `3px 3px 0 ${ck.ink}`,
                     fontFamily: ck.body,
                     fontSize: 16,
                     fontWeight: 700,

@@ -47,7 +47,7 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-export function Sticker({ text, size = 22 }: { text: string; size?: number }) {
+export function Sticker({ text, size = 22, color = ck.accent }: { text: string; size?: number; color?: string }) {
   if (!text) return null;
   return (
     <span
@@ -59,7 +59,7 @@ export function Sticker({ text, size = 22 }: { text: string; size?: number }) {
         padding: '2px 10px',
         fontFamily: ck.script,
         fontSize: size,
-        color: ck.accent,
+        color,
         whiteSpace: 'nowrap',
         flexShrink: 0,
       }}

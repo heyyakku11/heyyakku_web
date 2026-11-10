@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Landing } from './pages/Landing.tsx';
 import { Poll } from './pages/Poll.tsx';
 import { Vote } from './pages/Vote.tsx';
+import { PersonalityVote } from './pages/PersonalityVote.tsx';
 import { CheckDetail } from './pages/CheckDetail.tsx';
 import { AskLogin } from './pages/AskLogin.tsx';
 import { AskOtp } from './pages/AskOtp.tsx';
@@ -23,6 +24,7 @@ export function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/p/:pollId" element={<Poll />} />
         <Route path="/vote/:pollId" element={<Vote />} />
+        <Route path="/personality/:shareCode" element={<PersonalityVote />} />
         <Route path="/check/:checkId" element={<CheckDetail />} />
         <Route path="/ask/login" element={<AskLogin />} />
         <Route path="/ask/otp" element={<AskOtp />} />
