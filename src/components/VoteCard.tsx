@@ -1,5 +1,6 @@
 import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { resultsLocked, type SharedContentDto } from '../lib/pollApi.ts';
+import { CHECK_STICKER } from '../lib/checkTheme.ts';
 
 // Mirrors the app's check/poll card (mirror_check_card.dart): tinted card, black eyebrow pill, tilted
 // handwritten sticker, bold question, white lettered options and a dashed "Add your own answer" row.
@@ -133,10 +134,10 @@ function Header({ content }: { content: SharedContentDto }) {
           }}
         >
           ?
-        </span>
+          </span>
         <span>
           <strong style={{ color: ui.text }}>A friend</strong> asked you
-        </span>
+          </span>
       </div>
       {check && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
@@ -158,26 +159,24 @@ function Header({ content }: { content: SharedContentDto }) {
           >
             {check.title}
           </span>
-          {check.sticker && (
-            <span
-              style={{
-                transform: 'rotate(-4.5deg)',
-                background: 'rgba(255,255,255,0.72)',
-                border: '1px solid #000',
-                borderRadius: ui.radius,
-                padding: '6px 10px',
-                fontFamily: "'Pacifico', cursive",
-                color: ui.accent,
-                fontSize: 18,
-                lineHeight: 1.15,
-                textAlign: 'center',
-                maxWidth: '55%',
-                overflowWrap: 'anywhere',
-              }}
-            >
-              {check.sticker}
-            </span>
-          )}
+          <span
+            style={{
+              transform: 'rotate(-4.5deg)',
+              background: 'rgba(255,255,255,0.72)',
+              border: '1px solid #000',
+              borderRadius: ui.radius,
+              padding: '6px 10px',
+              fontFamily: "'Pacifico', cursive",
+              color: ui.accent,
+              fontSize: 18,
+              lineHeight: 1.15,
+              textAlign: 'center',
+              maxWidth: '55%',
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {CHECK_STICKER}
+          </span>
         </div>
       )}
     </>

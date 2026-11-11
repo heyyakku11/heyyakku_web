@@ -57,7 +57,6 @@ export interface PollDetailsDto {
 export interface CheckDetailsDto {
   title: string;
   backgroundColor: string;
-  sticker: string;
 }
 
 export interface SharedContentDto {
@@ -210,7 +209,6 @@ export function parseSharedContent(body: unknown): SharedContentDto | null {
       ? {
           title: String(c.title ?? ''),
           backgroundColor: String(c.backgroundColor ?? ''),
-          sticker: String(c.sticker ?? ''),
         }
       : null,
   };

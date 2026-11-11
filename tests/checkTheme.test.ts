@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { resolveCheckTheme } from '../src/lib/checkTheme.ts';
 import { parseWeeklyChecks } from '../src/lib/checkApi.ts';
 
-const legacy = { title: 'Loyalty Check', backgroundColor: '#FFEFC2', sticker: 'Say it plain' };
+const legacy = { title: 'Loyalty Check', backgroundColor: '#FFEFC2' };
 
 const vibe = {
   checkType: 'VIBE_CHECK',
@@ -14,7 +14,6 @@ const vibe = {
     labelColor: '#111111',
     questionColor: '#222222',
     accentColor: '#7B4DD0',
-    stickerLabel: 'Read the room',
     optionBackgroundColor: '#333333',
     optionTextColor: '#FAFAFA',
   },
@@ -27,7 +26,7 @@ test('the card is driven by the backend theme', () => {
   assert.equal(t.background, '#ECE3FF');
   assert.equal(t.headingColor, '#111111');
   assert.equal(t.questionColor, '#222222');
-  assert.equal(t.sticker, 'Read the room');
+  assert.equal(t.sticker, 'No filter, Just truth');
   assert.equal(t.optionBackground, '#333333');
   assert.equal(t.optionText, '#FAFAFA');
 });
@@ -54,7 +53,7 @@ test('legacy checks and unusable themes render from the flat fields', () => {
     const t = resolveCheckTheme(raw, legacy);
     assert.equal(t.heading, 'Loyalty Check');
     assert.equal(t.background, '#FFEFC2');
-    assert.equal(t.sticker, 'Say it plain');
+    assert.equal(t.sticker, 'No filter, Just truth');
     assert.equal(t.checkType, null);
   }
 });
@@ -63,8 +62,8 @@ test('parseWeeklyChecks attaches a resolved theme to each check', () => {
   const body = {
     success: true,
     data: [
-      { id: 'a', title: 'Vibe Check', question: 'Q?', backgroundColor: '#ECE3FF', sticker: 's', options: [{ id: 'o', text: 'Yes' }], used: false, theme: vibe },
-      { id: 'b', title: 'Old', question: 'Q?', backgroundColor: '#FFEFC2', sticker: 'x', options: [{ id: 'o', text: 'Yes' }], used: false },
+      { id: 'a', title: 'Vibe Check', question: 'Q?', backgroundColor: '#ECE3FF', options: [{ id: 'o', text: 'Yes' }], used: false, theme: vibe },
+      { id: 'b', title: 'Old', question: 'Q?', backgroundColor: '#FFEFC2', options: [{ id: 'o', text: 'Yes' }], used: false },
     ],
   };
   const checks = parseWeeklyChecks(body)!;

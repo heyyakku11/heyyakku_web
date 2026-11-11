@@ -22,7 +22,6 @@ export interface WeeklyCheck {
   title: string;
   question: string;
   backgroundColor: string;
-  sticker: string;
   options: { id: string; text: string }[];
   used: boolean;
   /** Resolved from the backend theme; legacy checks get a theme derived from the fields above. */
@@ -78,13 +77,11 @@ export function parseWeeklyChecks(body: unknown): WeeklyCheck[] | null {
       title: str(c.title),
       question: str(c.question),
       backgroundColor: str(c.backgroundColor),
-      sticker: str(c.sticker),
       options,
       used: c.used === true,
       theme: resolveCheckTheme(c.theme, {
         title: str(c.title),
         backgroundColor: str(c.backgroundColor),
-        sticker: str(c.sticker),
       }),
     });
   }

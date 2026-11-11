@@ -1,7 +1,7 @@
 // Turns the theme the backend assigned to a check into what the web cards need.
 // Nothing here knows about Mirror / Vibe / Trust: the backend owns every theme, and this
 // only reads `theme.config`. Missing or malformed optional properties fall back to defaults,
-// and checks without a theme (legacy) are rendered from their flat title/color/sticker.
+// and checks without a theme (legacy) are rendered from their flat title/color.
 
 export interface CheckThemeView {
   checkType: string | null;
@@ -20,8 +20,10 @@ export interface CheckThemeView {
 export interface LegacyCheckStyle {
   title: string;
   backgroundColor: string;
-  sticker: string;
 }
+
+/** The sticker on every check card. It is fixed in the app; the API no longer sends one. */
+export const CHECK_STICKER = 'No filter, Just truth';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const DEFAULT_BG = '#FFD6E0';
@@ -50,7 +52,6 @@ export function resolveCheckTheme(raw: unknown, legacy: LegacyCheckStyle): Check
   const c: Record<string, unknown> = config ?? {
     heading: legacy.title,
     backgroundColor: legacy.backgroundColor,
-    stickerLabel: legacy.sticker,
   };
 
   const accent = hex(c.accentColor, DEFAULT_ACCENT);
@@ -65,7 +66,7 @@ export function resolveCheckTheme(raw: unknown, legacy: LegacyCheckStyle): Check
     headingColor: hex(c.labelColor, DEFAULT_INK),
     questionColor: hex(c.questionColor, DEFAULT_INK),
     accent,
-    sticker: text(c.stickerLabel),
+    sticker: CHECK_STICKER,
     stickerColor: hex(c.stickerColor, accent),
     optionBackground: hex(c.optionBackgroundColor, '#FFFFFF'),
     optionText: hex(c.optionTextColor, DEFAULT_INK),
