@@ -267,66 +267,9 @@ export function CardResult() {
         return <VersusBoard leader={ranked[0]} runnerUp={ranked[1] ?? null} pick={pick} />;
       })()}
 
-      <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.5, color: ck.accent }}>
-        {result.resultsAvailable ? 'HOW THEY VOTED · ENDED' : 'VOTING ENDED'}
-      </span>
-
-      {result.resultsAvailable ? (
-        <div role="list" aria-label="Results" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {result.options.map((option) => {
-            const lead = option.isLeading;
-            return (
-              <div
-                key={`${option.displayOrder}-${option.text}`}
-                role="listitem"
-                style={{
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderRadius: 20,
-                  border: `1.6px solid ${ck.ink}`,
-                  background: lead ? ck.ink : '#fff',
-                  boxShadow: `0 3px 0 ${lead ? ck.accent : ck.ink}`,
-                }}
-              >
-                <div
-                  aria-hidden
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: `${Math.min(100, Math.max(0, option.percentage))}%`,
-                    background: lead ? 'rgba(208, 46, 98, 0.55)' : 'rgba(208, 46, 98, 0.16)',
-                  }}
-                />
-                <div
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 12,
-                    padding: '14px 16px',
-                    color: lead ? '#fff' : ck.ink,
-                    fontWeight: 700,
-                    fontSize: 15,
-                  }}
-                >
-                  <span>{option.text}</span>
-                  <span style={{ fontFamily: ck.heading, fontWeight: 800, fontSize: 17 }}>
-                    {Math.round(option.percentage)}%
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-          {result.customAnswerPercentage ? (
-            <p style={{ margin: 0, fontSize: 13, color: ck.muted }}>
-              {Math.round(result.customAnswerPercentage)}% wrote their own answer.
-            </p>
-          ) : null}
-        </div>
-      ) : (
+      {!result.resultsAvailable && (
         <p style={{ margin: 0, color: ck.muted, fontSize: 15, lineHeight: 1.4 }}>
-          Not enough people voted to show a result.
+          Voting ended, but not enough people voted to show a result.
         </p>
       )}
 
