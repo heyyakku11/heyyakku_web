@@ -1,136 +1,19 @@
-import { Fragment, type ReactNode } from 'react';
-import { Navbar } from '../components/Navbar.tsx';
-import { Footer } from '../components/Footer.tsx';
-import { designTokens } from '../design-tokens.js';
-import { legalConfig } from '../lib/legalConfig.ts';
+import { LegalDocument } from '../components/LegalDocument.tsx';
 import {
-  PRIVACY_POLICY_CONTACT_INTRO,
+  PRIVACY_POLICY_EFFECTIVE,
   PRIVACY_POLICY_LAST_UPDATED,
   PRIVACY_POLICY_MD,
+  PRIVACY_POLICY_TITLE,
 } from '../content/privacyPolicy.ts';
 
-const headingFont = designTokens.typography.fontFamilies.heading;
-
-/** Renders **bold** spans inside a line of text. */
-function renderInline(text: string): ReactNode {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith('**') && part.endsWith('**') ? (
-      <strong key={i} style={{ color: designTokens.colors.dark }}>
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      <Fragment key={i}>{part}</Fragment>
-    ),
-  );
-}
-
-/** Minimal renderer for the policy Markdown: ##, ###, "- " lists, paragraphs, **bold**. */
-function renderPolicy(md: string): ReactNode[] {
-  const blocks = md.trim().split(/\n{2,}/);
-  return blocks.map((block, i) => {
-    if (block.startsWith('### ')) {
-      return (
-        <h3
-          key={i}
-          style={{ fontFamily: headingFont, color: designTokens.colors.dark }}
-        >
-          {block.slice(4)}
-        </h3>
-      );
-    }
-    if (block.startsWith('## ')) {
-      return (
-        <h2
-          key={i}
-          style={{
-            fontFamily: headingFont,
-            color: designTokens.colors.dark,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          {block.slice(3)}
-        </h2>
-      );
-    }
-    if (block.startsWith('- ')) {
-      return (
-        <ul key={i}>
-          {block.split('\n').map((line, j) => (
-            <li key={j}>{renderInline(line.replace(/^- /, ''))}</li>
-          ))}
-        </ul>
-      );
-    }
-    return (
-      <p key={i}>
-        {renderInline(block)}
-      </p>
-    );
-  });
-}
-
 export function PrivacyPolicy() {
-  const { entityName, contactEmail, address, websiteUrl } = legalConfig;
-  const contactRows: Array<[string, ReactNode]> = [];
-  if (entityName) contactRows.push(['Company or legal entity', entityName]);
-  if (contactEmail) {
-    contactRows.push([
-      'Privacy contact email',
-      <a key="email" href={`mailto:${contactEmail}`} style={{ textDecoration: 'underline' }}>
-        {contactEmail}
-      </a>,
-    ]);
-  }
-  if (address) contactRows.push(['Business or registered address', address]);
-  if (websiteUrl) {
-    contactRows.push([
-      'Website',
-      <a key="site" href={websiteUrl} style={{ textDecoration: 'underline' }}>
-        {websiteUrl}
-      </a>,
-    ]);
-  }
-
   return (
-    <div className="min-h-full flex flex-col" style={{ background: designTokens.colors.bgWhite }}>
-      <Navbar minimal />
-      <main className="legal-main">
-        <article className="legal-article" style={{ color: designTokens.colors.textMuted }}>
-          <h1
-            style={{
-              fontFamily: headingFont,
-              color: designTokens.colors.dark,
-              letterSpacing: '-0.03em',
-            }}
-          >
-            Yakku Privacy Policy
-          </h1>
-          <p className="legal-meta">
-            <strong style={{ color: designTokens.colors.dark }}>Last Updated:</strong>{' '}
-            {PRIVACY_POLICY_LAST_UPDATED}
-          </p>
-
-          {renderPolicy(PRIVACY_POLICY_MD)}
-
-          <h2
-            style={{
-              fontFamily: headingFont,
-              color: designTokens.colors.dark,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            17. Contact Us
-          </h2>
-          <p>{PRIVACY_POLICY_CONTACT_INTRO}</p>
-          {contactRows.map(([label, value]) => (
-            <p key={label}>
-              <strong style={{ color: designTokens.colors.dark }}>{label}:</strong> {value}
-            </p>
-          ))}
-        </article>
-      </main>
-      <Footer minimal />
-    </div>
+    <LegalDocument
+      title={PRIVACY_POLICY_TITLE}
+      effective={PRIVACY_POLICY_EFFECTIVE}
+      lastUpdated={PRIVACY_POLICY_LAST_UPDATED}
+      markdown={PRIVACY_POLICY_MD}
+    />
   );
 }
 

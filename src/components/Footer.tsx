@@ -20,6 +20,12 @@ export function FooterBrand({ size = 22 }: { size?: number }) {
   );
 }
 
+/** Footer links that open a page of their own. */
+const LEGAL_LINKS: Record<string, string> = {
+  Privacy: '/policy',
+  Terms: '/terms',
+};
+
 const FOOTER_SECTIONS = [
   {
     title: 'Product',
@@ -31,7 +37,7 @@ const FOOTER_SECTIONS = [
   },
   {
     title: 'Legal',
-    links: ['Privacy'],
+    links: ['Privacy', 'Terms'],
   },
 ];
 
@@ -92,7 +98,7 @@ export function Footer({ minimal = false }: FooterProps) {
                   {section.links.map((link) => (
                     <li key={link} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       <a
-                        href={link === 'Privacy' ? '/policy' : `#${link.toLowerCase()}`}
+                        href={LEGAL_LINKS[link] ?? `#${link.toLowerCase()}`}
                         className="text-sm transition-colors duration-150 inline-block"
                         style={{
                           color: designTokens.colors.textMuted,

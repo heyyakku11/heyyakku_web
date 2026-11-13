@@ -1,340 +1,217 @@
-// Privacy Policy body, kept as Markdown so the draft can be edited as text.
-// Section 17 (Contact Us) is rendered by the page from VITE_* env values, not from here.
-export const PRIVACY_POLICY_LAST_UPDATED = 'October 28, 2026';
+// Privacy Policy, kept as Markdown so it can be edited as text. Source: Yakku_Privacy_Policy.docx.
+// Rendered by the Privacy Policy page (/policy). Headings use "## " and "### ", lists "- ", bold **like this**.
+export const PRIVACY_POLICY_TITLE = "Yakku Privacy Policy";
+export const PRIVACY_POLICY_EFFECTIVE = "12 November 2026";
+export const PRIVACY_POLICY_LAST_UPDATED = "12 November 2026";
 
 export const PRIVACY_POLICY_MD = `
-## 1. Introduction
+## 1. Who we are
 
-Welcome to Yakku ("Yakku," "we," "our," or "us").
+This Privacy Policy is issued by **Yakku Technologies Private Limited** (CIN: U63120DC2026PTC476011), a company incorporated under the Companies Act, 2013, with its registered office at A-1/128, 2nd Floor, Sector-11, Rohini, Delhi – 110085 (“**Yakku**”, “**we**”, “**us**” or “**our**”).
 
-Yakku is an anonymous polling platform that enables users to create polls, participate in polls and predefined checks, share cards through links, and express their opinions.
+It explains how we collect, use, share, store and delete personal data when you use the Yakku mobile application, the website at https://heyyakku-web.vercel.app and related services (together, the “**Service**”).
 
-This Privacy Policy explains how we collect, use, store, disclose, and delete personal information when you use the Yakku mobile applications, website, and related services.
+For the purposes of the Digital Personal Data Protection Act, 2023 (“**DPDP Act**”), Yakku is the Data Fiduciary for personal data processed through the Service. This Policy should be read with our Terms of Service.
 
-Yakku is intended for individuals aged 18 and above.
+**Yakku is only for people aged 18 and above.**
 
-By using Yakku, you acknowledge that you have had the opportunity to read this Privacy Policy. Where consent is required by applicable law, we will obtain it through the appropriate process.
+## 2. What Yakku does
 
-## 2. Information We Collect
+Yakku lets you ask your friends questions anonymously. You pick or write a question, make a private guess about how your friends will answer, and share the card through a link or on platforms such as Instagram, WhatsApp, Facebook or Snapchat. Friends vote, can add their own answer and, if they wish, explain why. You can then **ask back**: send an anonymous follow-up question to a friend who gave a reason, if that friend has allowed it. Friends’ answers to the “Who you are” card build your **Yakku Profile**. Yakku also offers ready-made questions (“**Checks**”), a weekly question, and optional paid **passes** that unlock more of your results.
 
-We collect information necessary to provide, maintain, secure, and improve Yakku.
+## 3. Information we collect
 
-### 2.1 Account Information
+### 3.1 Account information
 
-When you register or sign in to Yakku, we may collect:
+You can register in the app, or on our website after you vote on a friend’s card. We collect your **mobile phone number**, your confirmation that you are 18 or older, your choice on whether people you answer can ask you back, and internal account identifiers. We verify your number with a one-time password (OTP) sent by SMS. Yakku gives you a randomly assigned anonymous name and avatar, which you can change; it does not need to be your real name.
 
-- Your mobile phone number.
-- Your name, where provided.
-- Your internal user and account identifiers.
-- Authentication and session-related information.
-- Information necessary to manage your account and provide our services.
+### 3.2 Your anonymous Yakku identity
 
-Yakku uses one-time passwords (OTPs) to verify mobile phone numbers and authenticate registered users.
+Every registered user has two identities:
 
-### 2.2 Real Identity and Anonymous Yakku Identity
+- **Real account identity:** your phone number and account identifiers. This is never shown to other users.
+- **Anonymous Yakku identity:** what other users see when you vote, answer or interact anonymously.
 
-Yakku maintains two distinct identity representations for registered users.
+Yakku can internally link your anonymous activity to your account. We do this only to run the Service, keep voting fair, prevent abuse, investigate reports, provide support and meet legal obligations (see Section 6).
 
-**Real account identity:** This includes the information associated with your actual account, such as your phone number, name, and internal account identifiers.
+### 3.3 Content you create
 
-**Anonymous Yakku identity:** This is a separate identity used to represent you in supported public interactions within Yakku.
+Questions, answer options and cards you create, cards you save, and your responses to Checks.
 
-Other users are shown your anonymous Yakku identity rather than your real account identity in the relevant interactions.
+### 3.4 Votes and answers you give
 
-Yakku may internally associate these identities to operate the service, manage accounts, maintain voting integrity, prevent misuse, and provide customer support where necessary.
+Your votes, any answers you write, and any reasons you give for your choice — on other people’s cards, on Checks, and on other users’ “Who you are” cards.
 
-**Important:** Anonymous identity does not mean that Yakku itself cannot associate activity with your account. It means that your real identity is not displayed to other users in the relevant anonymous interactions.
+### 3.5 Who you are (your Yakku Profile)
 
-Users should avoid including identifying or sensitive personal information in poll questions, answer options, responses, or explanations that they share.
+Your Yakku Profile is built from the “Who you are” card. Friends each pick up to 3 of 10 everyday traits that describe you (for example, good listener, honest or funny), and you make your own guess too. Your top traits appear only after at least 5 friends have answered.
 
-### 2.3 Device and Technical Information
+- Your Yakku Profile is **visible only to you**. Other users cannot see it.
+- The people who answered about you are **not identified** to you or to other users.
+- These answers are the opinions of other users, not statements by Yakku. You can report any answer you receive, and we remove answers that break our Terms of Service.
 
-When you use Yakku, we may collect technical information, including:
+### 3.6 Voters and web sign-up
 
-- Device model and related device details.
-- Operating system and application version, where available.
-- Push notification tokens.
-- Internet Protocol (IP) addresses.
-- Session and authentication-related identifiers.
-- Technical, diagnostic, and security logs.
+People can open a shared card and vote on our website without registering. For these voters we process the vote, any answer or reason they write, a session token, browser cookies or browser storage, and their IP address. Voters who want to see their score, ask their own question or receive ask backs sign up with their phone number as described in Section 3.1. Signing up does not reveal to anyone how they voted.
 
-We use this information to manage sessions, deliver notifications, diagnose technical problems, maintain service reliability, protect accounts, and detect suspicious or unauthorized activity.
+### 3.7 Device, usage and diagnostic information
 
-### 2.4 Polls, Checks, Votes, and Answers
+We collect device model, operating system, app version, IP address, push notification token, session identifiers, in-app activity events (such as screens viewed and features used) and crash reports. We use **Firebase Analytics** and **Firebase Crashlytics** (provided by Google) for this.
 
-We process information required to provide Yakku's polling functionality, including:
+### 3.8 When you contact us
 
-- Poll questions created by registered users.
-- Poll answer options.
-- Predefined checks created by Yakku.
-- Votes and selected answers.
-- Answers written by voters when that option is available.
-- Reasons or explanations submitted by voters.
-- Card identifiers, share codes, and related records.
-- Information used to maintain voting integrity and prevent duplicate or invalid votes.
+If you write to us, we keep your message and contact details to respond.
 
-Yakku currently supports question-based cards and does not offer media-based cards as part of its polling functionality.
+### 3.9 Your private guess
 
-Depending on the card, voters may choose an existing answer option or provide their own answer. Where supported, voters may also explain why they selected an answer.
+Before you share a card, you guess how your friends will answer. We store your guess to show you how it compares with their votes. Your guess is never shown to your friends or anyone else.
 
-This content is processed to operate the voting system and display the relevant card and results.
+### 3.10 Ask back chats
 
-### 2.5 Saved Cards and Voting Results
+When you ask back, we store the messages exchanged between you and the friend you asked, and the reason the chat started from. Ask back is possible only if that friend has allowed people they answer to ask them back, which they can turn off at any time in Settings. Both sides stay anonymous to each other. Chats are open for a limited time, and either person can report or block the other.
 
-Registered users can save cards for future viewing.
+### 3.11 Purchases
 
-Yakku displays voting results after at least one vote has been recorded for the relevant card. Before the first vote, results are not displayed.
+If you buy a pass (for one card, a week or a month) or extra ask back messages, we record the plan or item, the amount, the date, the transaction ID and the payment status, linked to your phone number. Payments are made by UPI and processed by Razorpay and, where required, Google Play billing. We do not receive or store your UPI PIN, bank account details or card numbers. Passes are one-time payments and do not renew automatically.
 
-The information displayed after voting depends on the card's functionality and configuration.
+### 3.12 Community early access
 
-### 2.6 Guest Information
+Community is not open yet. If you tap **Notify me**, we record that you want to hear when it opens. You can also queue up to 3 questions for Community, with a topic. We store these until Community opens or until you remove them. You can edit or remove a queued question at any time. Before your queued questions go live, we will tell you what other people in Community will see and ask for your consent where required.
 
-Yakku allows people to vote on supported shared cards without creating or signing in to a registered account.
+### 3.13 What we do not collect
 
-Guest users can participate in supported voting experiences but cannot create polls or checks using guest access.
+Yakku does **not** access your phone contacts, precise location, photos, camera, microphone or files.
 
-Guest sessions may use authentication tokens, browser cookies, and browser storage to maintain session continuity and support voting functionality.
+## 4. How we use your information
 
-Guest tokens are designed to expire after approximately 30 days. Token expiry does not necessarily mean that all associated records, browser data, or logs are automatically deleted at the same time.
+We use personal data only for these purposes:
 
-Guest users may also generate technical information, such as IP addresses and session-related records.
+- Creating your account and verifying your phone number.
+- Showing your anonymous identity instead of your real identity to other users.
+- Letting you create, share, vote on and save cards, make your guess, take part in Checks, and queue questions for Community.
+- Building and displaying your Yakku Profile to you.
+- Showing results and insights. Some insights compare your card with all cards of the same type on Yakku; these comparisons use combined figures and never identify anyone.
+- Delivering ask back messages and enforcing chat limits.
+- Processing payments, unlocking what you bought, and keeping records of transactions.
+- Sending OTPs, account and security messages, and notifications about your cards, results, ask backs and Community opening by push notification, SMS and WhatsApp.
+- Keeping voting fair, preventing duplicate votes, fake accounts, spam and abuse.
+- Reviewing reports and enforcing our Terms of Service.
+- Fixing bugs, understanding how features are used and improving the Service.
+- Handling account deletion and privacy requests.
+- Meeting legal obligations, including tax and accounting requirements, and protecting the rights and safety of users and Yakku.
 
-## 3. How We Use Your Information
+We process your data on the basis of your consent, which you give when you register and use the Service, and for the legitimate uses permitted under the DPDP Act, such as complying with law.
 
-We use collected information for the following purposes:
+## 5. Anonymity: what it means and its limits
 
-- Creating and managing registered accounts.
-- Verifying mobile phone numbers through OTP authentication.
-- Maintaining real and anonymous identity representations.
-- Enabling poll creation, card sharing, voting, and check participation.
-- Recording answers, opinions, and explanations submitted by voters.
-- Saving cards for future viewing.
-- Displaying voting results.
-- Managing authentication tokens and user sessions.
-- Delivering push notifications, in-app notifications, SMS messages, and WhatsApp messages.
-- Maintaining voting integrity and preventing duplicate votes or misuse.
-- Detecting security issues and protecting the platform.
-- Diagnosing errors and maintaining service reliability.
-- Processing account deletion requests.
-- Maintaining limited records where necessary for security, operational, accounting, or legal purposes.
+- Other users see your **anonymous Yakku identity**, not your phone number.
+- The person who created a card does not see which voter chose which answer, and a profile owner does not see who answered about them.
+- In ask back chats, neither person sees the other’s name or number. Paying for a pass never reveals who anyone is.
+- Anonymity is **not absolute**. Yakku can link activity to an account internally, and we may disclose the account behind anonymous activity where the law requires it (see Section 6).
+- Others may sometimes guess who you are from what you write or from the context of a small friend group. Do not include your own or anyone else’s phone number, address or other identifying or sensitive details in questions, answers, reasons or messages.
 
-Yakku does not currently offer in-app purchases or monetization features. If these practices change, we will review and update this Privacy Policy as appropriate.
+## 6. How we share information
 
-## 4. Authentication and Session Management
+**We do not sell your personal data.** We do not share it with third parties for their own advertising.
 
-Yakku uses OTP-based authentication and JSON Web Tokens (JWTs) to manage registered-user sessions.
+### 6.1 Service providers
 
-Our current token configuration is designed around the following expiry periods:
+We use the following providers to run the Service. They process data only on our instructions:
 
-- **Access token:** 15 minutes.
-- **Refresh token:** 7 days.
-- **Guest token:** 30 days.
+- **Firebase (Google):** push notifications, analytics and crash reporting.
+- **MSG91:** OTPs and service messages by SMS and WhatsApp, including result and ask back alerts. You can stop these alerts by replying STOP or tapping “Stop these updates”.
+- **Razorpay and Google Play billing:** processing payments.
+- **Neon:** database hosting.
+- **Render:** backend server hosting.
+- **Vercel:** website hosting and delivery.
+- **Upstash:** caching.
+- **Resend:** service emails, where used.
 
-These periods describe the intended token validity, not the retention period of all information associated with a session.
+### 6.2 Shared links and external platforms
 
-Guest authentication on the web may use cookies and browser storage. These mechanisms support guest session continuity and voting functionality.
+When you share a card on Instagram, WhatsApp, Facebook, Snapchat or elsewhere, anyone with the link can open it. Those platforms handle data under their own privacy policies, which we do not control.
 
-Users should not share OTPs or other authentication credentials with anyone.
+### 6.3 Legal requirements and safety
 
-## 5. Poll Sharing and External Platforms
+We may disclose information, including the account behind an anonymous identity, where required by law or by a lawful order of a court or government agency, including under the Information Technology Act, 2000 and its rules. We may also do so to investigate fraud, abuse or security incidents, to protect any person from harm, or to establish or defend legal claims.
 
-Registered users can share polls and checks through supported social media and messaging platforms, including:
+### 6.4 Business transfers
 
-- Instagram.
-- WhatsApp.
-- Facebook.
-- Snapchat.
+If Yakku is involved in a merger, acquisition or sale of assets, personal data may transfer to the new owner, which will remain bound by this Policy or equivalent protections.
 
-Users can also copy a shareable link and distribute it through other channels.
+## 7. Where your data is stored
 
-People who receive a shared link may be able to open the card and vote as guests without registering, where guest voting is supported.
+Our database and servers are hosted in **Singapore**. Some of our providers may process data in other countries, including the United States. We transfer data outside India only as permitted under the DPDP Act and with providers that protect it appropriately.
 
-When you share a card, its recipients may access the information made available through the shared link. Please review your card content before sharing it.
+## 8. How long we keep data
 
-External platforms may process information associated with links or shared content according to their own privacy policies. Yakku does not control the privacy practices of those external platforms.
+- **Account and profile data:** while your account is active, then deleted as described in Section 9.
+- **Cards, guesses, votes, answers and ask back chats:** until you delete the card or your account.
+- **Voters who don’t sign up:** sessions expire after about 30 days. Their votes and answers stay part of the card they were given on until that card is deleted.
+- **Community queue:** “Notify me” requests and queued questions, until Community opens, you remove them, or you delete your account.
+- **Transaction records:** kept with your phone number in encrypted form for as long as tax and accounting laws require, even after your account is deleted (see Section 9.2).
+- **Logs and security records:** kept for a limited period for security, fraud prevention and legal compliance.
+- **Backups:** deleted data is removed from backups as they are replaced in the normal cycle.
 
-## 6. Notifications and Communications
+## 9. Deleting your account
 
-Yakku uses notifications to inform users about card activity and relevant service events.
+### 9.1 How to request deletion
 
-### 6.1 Vote Notifications
+- **In the app:** go to **Settings → Delete account**.
+- **Without the app:** email **contact@heyyakku.com** with the subject **“Delete my Yakku account”** and include your registered mobile number. We will verify that the request comes from the account holder before acting on it.
 
-Yakku is designed to notify card creators when other users vote on their cards.
+### 9.2 What happens next
 
-Our current notification approach is as follows:
+- Your account enters a **30-day pending deletion period**. If you sign in during this period, deletion is cancelled.
+- After 30 days, we permanently delete your account information, your anonymous name, your cards, guesses, Yakku Profile, ask back chats, queued Community questions, and the votes, answers and reasons you gave on other users’ cards.
+- **What we keep:** your phone number, in encrypted form, together with records of your purchases (plan, amount, date, transaction ID and payment status). We keep these only to meet tax, accounting and legal obligations and to handle refunds or payment disputes, and only for as long as those laws require. They are not linked to your Yakku activity, and we do not use them to contact you or for any other purpose.
+- We may also keep limited log records where needed for security, fraud prevention or legal obligations, only for as long as necessary.
+- Deleting your account does not refund passes you have bought.
 
-- The first three votes on a card may generate separate notifications.
-- After the first three vote notifications, subsequent vote activity may be grouped into three-hour notification windows.
-- Where applicable, activity received during a window is combined into a single notification.
+## 10. Cookies and browser storage
 
-This approach is intended to keep users informed while reducing excessive notifications.
+Our website uses essential cookies and browser storage only to run voting, sign-up and sessions on the web. We do not use advertising cookies. Blocking cookies may stop web voting from working.
 
-Actual delivery depends on device permissions, connectivity, notification settings, and service availability.
+## 11. Security
 
-### 6.2 Other Notifications
+We use reasonable security practices, including encrypted connections (HTTPS/TLS), access controls, token-based sessions and restricted access to production systems. No system is completely secure. Please keep your phone secure and never share your OTP with anyone. If we experience a personal data breach, we will notify affected users and authorities as required by law.
 
-Depending on the functionality involved, Yakku may send:
+## 12. Your rights
 
-- Push notifications.
-- In-app notifications.
-- SMS messages.
-- WhatsApp messages.
+Under the DPDP Act, you have the right to:
 
-These communications may be used for OTP verification, authentication, account security, service updates, card activity, weekly checks, and other relevant service communications.
+- Get a summary of the personal data we process about you.
+- Correct or update inaccurate data.
+- Have your data erased.
+- Withdraw your consent at any time (this will not affect processing already done, and may mean you can no longer use the Service).
+- Have your grievances addressed.
+- Nominate another person to exercise your rights if you die or become unable to do so.
 
-Push notification delivery may require a device-specific push token. SMS and WhatsApp delivery may require your mobile phone number and an external messaging provider.
+To use these rights, write to **contact@heyyakku.com**. We will respond within the time required by law.
 
-Users can manage push notification permissions through their device settings. Disabling push notifications may prevent push delivery but may not disable other necessary service communications.
+## 13. Age requirement
 
-Where consent is required for a particular communication, we will obtain it as required by applicable law.
+Yakku is only for people aged **18 and above**. We do not knowingly collect data from anyone under 18. If we learn that a user is under 18, we will close the account and delete the related data. If you believe someone under 18 is using Yakku, please write to contact@heyyakku.com.
 
-## 7. Weekly Checks
+## 14. Changes to this Policy
 
-Yakku provides predefined checks that are refreshed weekly.
+We may update this Policy when our features, providers or legal obligations change. We will post the updated Policy with a new “Last updated” date, and notify you in the app before material changes take effect.
 
-We process the information needed to make available the current checks, record responses, maintain voting integrity, and display relevant results.
+## 15. Grievance Officer
 
-Users can participate in and share supported checks. Checks are predefined by Yakku and are distinct from polls created by registered users.
+In accordance with the Information Technology Act, 2000, its rules, and the DPDP Act:
 
-## 8. Third-Party Service Providers
+**Name:** Manish Solanki
 
-Yakku uses third-party infrastructure and service providers to operate the application, website, backend, database, notifications, and related functionality.
+**Designation:** Grievance Officer, Yakku Technologies Private Limited
 
-Our current providers include:
+**Address:** A-1/128, 2nd Floor, Sector-11, Rohini, Delhi – 110085
 
-**Firebase:** Used for supported application services and push notification functionality, as applicable to the implementation.
+**Email:** contact@heyyakku.com
 
-**Neon:** Used to host our database.
+We will acknowledge complaints within 24 hours and resolve them within 15 days of receipt. If you are not satisfied with our response, you may complain to the Data Protection Board of India.
 
-**Render:** Used to host our ASP.NET Core backend services.
+## 16. Governing law
 
-**Vercel:** Used to host our React-based website and admin dashboard and provide related web delivery infrastructure.
-
-**Upstash:** Used for managed Redis functionality.
-
-**Resend:** Used for email-related functionality where configured.
-
-These providers may process information on our behalf as necessary to provide their services. The information involved depends on the functionality being used and the provider's role.
-
-We do not sell users' personal information as part of our current business model. We do not intentionally provide user information to unrelated third parties for their independent advertising or marketing purposes.
-
-We may disclose information where necessary to comply with applicable law, respond to lawful requests, protect users or Yakku, investigate security incidents, or establish, exercise, or defend legal claims.
-
-### SMS and WhatsApp Providers
-
-The provider used for SMS and WhatsApp delivery has not yet been finalized.
-
-Before introducing a provider, we will review its role, the information it processes, and any applicable privacy requirements. We will update this Policy where necessary to reflect the provider and its processing activities.
-
-## 9. Hosting and International Data Processing
-
-Yakku's current infrastructure includes the following hosting arrangements:
-
-- **Database:** Neon, hosted in Singapore.
-- **Backend:** Render, hosted in Singapore.
-- **Website and admin dashboard:** Vercel hosting and delivery infrastructure.
-- **CDN:** The current website delivery configuration includes a location in Washington, United States.
-- **Caching and Redis functionality:** Upstash.
-- **Additional services:** Firebase and Resend.
-
-The primary hosting location of a database or backend does not necessarily mean all related information is processed exclusively in that location. Processing and transfers may occur in other locations depending on provider architecture, configuration, and service delivery.
-
-Where international transfers or processing are subject to applicable legal requirements, we will take the required measures.
-
-## 10. Data Retention and Account Deletion
-
-### 10.1 Requesting Account Deletion
-
-Registered users can request account deletion from within the Yakku application.
-
-When a deletion request is submitted, the account enters a pending-deletion period of 30 days.
-
-During this period:
-
-- The account remains in a pending-deletion state.
-- Polls created by the account remain available to other users.
-- If the user signs in again during the 30-day period, the pending deletion is cancelled under the current deletion process.
-
-If the user does not sign in during this period, the account proceeds to permanent deletion.
-
-### 10.2 Permanent Deletion
-
-Once permanent deletion is completed, Yakku deletes the user's account information and user-created polls, together with associated personal information and content covered by the deletion process.
-
-Yakku may retain limited log records and payment-history references after deletion where necessary for security, operational, accounting, or legal purposes.
-
-Retained records will be limited to the applicable purpose and handled in accordance with relevant legal requirements.
-
-### 10.3 Backups and Third-Party Systems
-
-Information may be processed or temporarily retained in provider systems, backups, or logs subject to separate retention cycles.
-
-Where applicable, deletion requests will be handled in accordance with the relevant provider capabilities, contractual arrangements, and legal requirements. Information will be deleted or de-identified when it is no longer required to be retained.
-
-### 10.4 Guest Data
-
-Guest tokens are designed to expire after approximately 30 days. Token expiry does not necessarily delete all related voting records, browser cookies, browser storage, or technical logs.
-
-Guest information is retained according to its purpose, system configuration, and applicable legal requirements.
-
-## 11. Cookies and Browser Storage
-
-Yakku's web-based guest voting functionality may use cookies and browser storage to maintain guest authentication and session continuity.
-
-These technologies support the operation of the voting experience and related security controls.
-
-Clearing browser storage or disabling cookies may affect guest sessions or prevent certain features from functioning correctly.
-
-Where additional cookies or similar technologies are introduced, we will provide appropriate disclosures and obtain consent where required by applicable law.
-
-## 12. Data Security
-
-We use technical and organizational measures intended to protect personal information against unauthorized access, loss, misuse, alteration, and disclosure.
-
-Depending on the system and functionality, these measures may include authentication controls, access restrictions, token-based session management, infrastructure security controls, and appropriate handling of operational logs.
-
-No online system can be guaranteed to be completely secure. Users should protect their devices and authentication credentials and avoid sharing OTPs with others.
-
-## 13. Your Privacy Rights
-
-Depending on applicable law, you may have rights to:
-
-- Request access to personal information associated with you.
-- Request correction of inaccurate information.
-- Request deletion of personal information, subject to applicable legal obligations.
-- Withdraw consent where processing is based on consent.
-- Raise a complaint or submit a privacy-related request.
-
-You can initiate account deletion through the Yakku application. For other privacy requests, use the contact details provided at the end of this Policy.
-
-We will review and respond to requests in accordance with applicable legal requirements.
-
-## 14. Minimum Age and Eligibility
-
-Yakku is intended for individuals who are **18 years of age or older**.
-
-By creating an account or using features that require registration, you confirm that you meet this minimum age requirement.
-
-Yakku is not intended for individuals under 18. If we become aware that an individual under 18 has created an account or provided personal information in violation of this requirement, we may take appropriate steps, including restricting or terminating the account and handling the associated information in accordance with applicable law.
-
-If you believe that an individual under 18 is using Yakku, please contact us using the details provided below.
-
-## 15. Third-Party Websites and Services
-
-Yakku may contain links to external websites or services, including social media platforms and shared poll links.
-
-External websites and services operate independently and may have their own privacy policies and data-handling practices.
-
-We encourage users to review the privacy policies of external services they choose to use.
-
-## 16. Changes to This Privacy Policy
-
-We may update this Privacy Policy when our features, data practices, infrastructure, or legal obligations change.
-
-When changes are material, we will take appropriate steps to notify users where required by applicable law.
-
-The updated Policy will be published with a revised "Last Updated" date.
+This Policy is governed by the laws of India. Courts in Delhi have jurisdiction over any dispute arising from it.
 `;
-
-export const PRIVACY_POLICY_CONTACT_INTRO =
-  'If you have questions about this Privacy Policy or Yakku’s handling of personal information, contact us using the details below.';

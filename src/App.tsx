@@ -9,6 +9,7 @@ import { AskLogin } from './pages/AskLogin.tsx';
 import { AskOtp } from './pages/AskOtp.tsx';
 import { CreatedCheck } from './pages/CreatedCheck.tsx';
 import { PrivacyPolicy } from './pages/PrivacyPolicy.tsx';
+import { TermsOfService } from './pages/TermsOfService.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { applyDesignTokensToCss } from './design-tokens.js';
 
@@ -30,6 +31,7 @@ export function App() {
         <Route path="/ask/otp" element={<AskOtp />} />
         <Route path="/created/:shareCode" element={<CreatedCheck />} />
         <Route path="/policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
