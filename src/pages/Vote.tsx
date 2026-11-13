@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AfterVote } from '../components/AfterVote.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { VoteForm, VoteOutcome, CUSTOM_ID } from '../components/VoteCard.tsx';
-import { WeeklyChecks } from '../components/WeeklyChecks.tsx';
 import {
   fetchSharedContent,
   getVotePhase,
@@ -114,6 +114,7 @@ function Notice({ title, body, retry }: { title: string; body: string; retry?: (
 
 export function Vote() {
   const { pollId: shareCode } = useParams<{ pollId: string }>();
+  const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -121,7 +122,6 @@ export function Vote() {
   const [submitting, setSubmitting] = useState(false);
   const [voted, setVoted] = useState(false);
   const [reason, setReason] = useState('');
-  const [results, setResults] = useState<SharedContentDto | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
   const inFlight = useRef(false);
 
@@ -204,14 +204,6 @@ export function Vote() {
     switch (result.kind) {
       case 'ok':
         setVoted(true);
-        // The vote response is the content as the voter now sees it: results appear only once the
-        // vote-count limit is reached, otherwise just the progress towards it.
-        if (result.content) setResults(result.content);
-        else {
-          fetchSharedContent(shareCode).then((r) => {
-            if (r.kind === 'ok') setResults(r.content);
-          });
-        }
         break;
       case 'auth-required':
         setVoteError('Your vote could not be accepted right now. Please try again in a moment.');
@@ -231,14 +223,16 @@ export function Vote() {
   };
 
   if (voted || phase === 'voted') {
+    // After any card vote: the same confirmation screen for everyone, whatever the vote count or pick.
+    // No results or weekly checks here; every button leads to the Yakku landing page.
+    const toLanding = () => navigate('/');
     return (
-      <Shell>
-        <VoteOutcome
-          content={results ?? content}
-          notice={voted ? '✓ Your vote has been submitted. Thanks for voting!' : "✓ You've already voted on this."}
-        />
-        <WeeklyChecks />
-      </Shell>
+      <AfterVote
+        title={voted ? 'Sent. Anonymously.' : "You've already voted."}
+        seeResults={{ label: 'See what others are saying', sub: 'Nobody ever knows it’s you', onClick: toLanding }}
+        yourTurn={{ label: 'Your Turn', sub: 'Find out what your friends say about you', onClick: toLanding }}
+        onDismiss={toLanding}
+      />
     );
   }
 
