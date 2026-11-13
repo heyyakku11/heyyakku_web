@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { bgOf, ck } from '../components/checkUi.tsx';
 import { isShareCode } from '../lib/pollApi.ts';
-import { fetchSharedResult, type SharedResultDto } from '../lib/resultApi.ts';
+import { fetchSharedResult, type ResultOptionDto, type SharedResultDto } from '../lib/resultApi.ts';
 
 type Load = { kind: 'loading' } | { kind: 'not-found' } | { kind: 'error' } | { kind: 'ok'; result: SharedResultDto };
 
@@ -80,9 +80,100 @@ function Notice({ title, body, to, action }: { title: string; body: string; to?:
   );
 }
 
+const NIGHT = '#1F191C';
+
+// The dark You vs Your circle board with the Plot twist / Bang on sticker, as on the shared poster.
+// "You" is the sharer's pick when the link carries it (?you=<answer>); otherwise the top answer.
+function VersusBoard({ leader, runnerUp, pick }: { leader: ResultOptionDto; runnerUp: ResultOptionDto | null; pick: ResultOptionDto | null }) {
+  const left = pick ?? leader;
+  const right = pick ? leader : runnerUp;
+  const verdict = pick ? (pick.text === leader.text ? 'Bang on.' : 'Plot twist.') : null;
+  const bangOn = verdict === 'Bang on.';
+
+  const panel = (bg: string, tag: string, label: string, percent: string | null, light: boolean) => (
+    <div
+      style={{
+        flex: 1,
+        minHeight: 150,
+        borderRadius: 20,
+        background: bg,
+        padding: '14px 14px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        boxSizing: 'border-box',
+        minWidth: 0,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 6, fontSize: 13, fontWeight: 700, color: light ? ck.muted : ck.ink }}>
+        <span>{tag}</span>
+        {percent && <span style={{ color: ck.accent, fontWeight: 800 }}>{percent}</span>}
+      </div>
+      <span style={{ fontFamily: ck.heading, fontWeight: 800, fontSize: 20, lineHeight: 1.1, letterSpacing: -0.4, color: ck.ink, overflowWrap: 'anywhere' }}>
+        {label}
+      </span>
+    </div>
+  );
+
+  return (
+    <div style={{ position: 'relative', marginTop: verdict ? 22 : 0 }}>
+      {verdict && (
+        <span
+          style={{
+            position: 'absolute',
+            top: -22,
+            left: '50%',
+            transform: 'translateX(-50%) rotate(-2deg)',
+            zIndex: 2,
+            whiteSpace: 'nowrap',
+            padding: '4px 18px 6px',
+            borderRadius: 18,
+            border: `1.6px solid ${bangOn ? '#1E6B3E' : NIGHT}`,
+            background: bangOn ? '#D7F5E3' : '#fff',
+            color: bangOn ? '#1E6B3E' : ck.accent,
+            fontFamily: ck.script,
+            fontSize: 22,
+          }}
+        >
+          {verdict}
+        </span>
+      )}
+      <div style={{ background: NIGHT, borderRadius: 26, padding: 9, position: 'relative', boxShadow: '0 10px 24px rgba(31,25,28,0.25)' }}>
+        <div style={{ display: 'flex', gap: 7 }}>
+          {panel(ck.pink, pick ? 'You' : 'Top answer', left.text, pick ? null : `${Math.round(left.percentage)}%`, false)}
+          {panel('#fff', pick ? 'Your circle' : 'Runner-up', right?.text ?? '-', right ? `${Math.round(right.percentage)}%` : null, true)}
+        </div>
+        <span
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            background: NIGHT,
+            border: '2px solid #fff',
+            color: '#fff',
+            fontSize: 11,
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          vs
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function CardResult() {
   const { shareCode } = useParams<{ shareCode: string }>();
   const navigate = useNavigate();
+  const [search] = useSearchParams();
   const [load, setLoad] = useState<Load>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -169,6 +260,13 @@ export function CardResult() {
       <h1 style={{ margin: 0, fontFamily: ck.heading, fontSize: 34, fontWeight: 800, letterSpacing: -0.8, lineHeight: 1.1, color: ck.ink }}>
         {result.question}
       </h1>
+      {result.resultsAvailable && result.options.length > 0 && (() => {
+        const ranked = [...result.options].sort((a, b) => b.percentage - a.percentage);
+        const you = search.get('you')?.trim();
+        const pick = you ? (result.options.find((o) => o.text === you) ?? null) : null;
+        return <VersusBoard leader={ranked[0]} runnerUp={ranked[1] ?? null} pick={pick} />;
+      })()}
+
       <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.5, color: ck.accent }}>
         {result.resultsAvailable ? 'HOW THEY VOTED · ENDED' : 'VOTING ENDED'}
       </span>
