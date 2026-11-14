@@ -139,22 +139,18 @@ export function PersonalityVote() {
   const ready = picked.length === REQUIRED_TRAITS;
 
   return (
-    <div style={{ minHeight: '100vh', background: PINK_BG, fontFamily: ck.body, display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 440, minHeight: '100vh', boxSizing: 'border-box', padding: '22px 22px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <span style={{ fontFamily: ck.heading, fontSize: 22, fontWeight: 800, color: ck.ink }}>
+    <div className="pv-page">
+      <div className="pv-card">
+        <span className="pv-logo">
           Yakku<span style={{ color: ck.accent }}>.</span>
         </span>
-        <span style={{ alignSelf: 'flex-start', background: '#fff', color: ck.accent, borderRadius: 14, padding: '5px 10px', fontSize: 11, fontWeight: 800, letterSpacing: 0.6 }}>
-          WHO YOU ARE
-        </span>
-        <h1 style={{ margin: 0, fontFamily: ck.heading, fontSize: 34, fontWeight: 800, letterSpacing: -0.8, lineHeight: 1.1, color: ck.ink }}>
-          Describe me in 3 words
-        </h1>
-        <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.5, color: ck.accent }}>
+        <span className="pv-tag">WHO YOU ARE</span>
+        <h1 className="pv-title">Describe me in 3 words</h1>
+        <span className="pv-count">
           {picked.length} OF {REQUIRED_TRAITS} PICKED
         </span>
 
-        <div role="group" aria-label="Traits" style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        <div role="group" aria-label="Traits" className="pv-chips">
           {traits.map((t) => {
             const on = picked.includes(t.id);
             return (
@@ -163,17 +159,11 @@ export function PersonalityVote() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggle(t.id)}
+                className="pv-chip"
                 style={{
-                  borderRadius: 18,
-                  border: `1.6px solid ${ck.ink}`,
                   background: on ? ck.ink : '#fff',
                   color: on ? '#fff' : ck.ink,
-                  boxShadow: `0 3px 0 ${on ? ck.accent : ck.ink}`,
-                  padding: '8px 14px',
-                  fontFamily: ck.body,
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: 'pointer',
+                  boxShadow: `0 2px 0 ${on ? ck.accent : ck.ink}`,
                 }}
               >
                 {on ? '✓ ' : ''}
@@ -183,9 +173,9 @@ export function PersonalityVote() {
           })}
         </div>
 
-        <div style={{ flex: 1 }} />
+        <div className="pv-spacer" />
         {error && (
-          <p role="alert" style={{ margin: 0, color: ck.error, fontSize: 14, fontWeight: 600, textAlign: 'center' }}>
+          <p role="alert" className="pv-error">
             {error}
           </p>
         )}
@@ -193,11 +183,12 @@ export function PersonalityVote() {
           type="button"
           onClick={send}
           disabled={!ready || sending}
-          style={{ height: 56, borderRadius: 28, border: 'none', background: '#D02E62', color: '#fff', fontFamily: ck.body, fontSize: 17, fontWeight: 700, cursor: ready && !sending ? 'pointer' : 'default', opacity: ready && !sending ? 1 : 0.5 }}
+          className="pv-send"
+          style={{ cursor: ready && !sending ? 'pointer' : 'default', opacity: ready && !sending ? 1 : 0.5 }}
         >
           {sending ? 'Sending…' : 'Send'}
         </button>
-        <span style={{ textAlign: 'center', fontSize: 12.5, color: ck.muted }}>Anonymous. They'll never know it was you.</span>
+        <span className="pv-note">Anonymous. They'll never know it was you.</span>
       </div>
     </div>
   );
