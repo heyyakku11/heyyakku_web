@@ -147,7 +147,7 @@ Our database and servers are hosted in **Singapore**. Some of our providers may 
 
 - **Account and profile data:** while your account is active, then deleted as described in Section 9.
 - **Cards, guesses, votes, answers and ask back chats:** until you delete the card or your account.
-- **Voters who don’t sign up:** sessions expire after about 30 days. Their votes and answers stay part of the card they were given on until that card is deleted.
+- **Voters who don’t sign up:** sessions expire after about 15 days. Their votes and answers stay part of the card they were given on until that card is deleted.
 - **Community queue:** “Notify me” requests and queued questions, until Community opens, you remove them, or you delete your account.
 - **Transaction records:** kept with your phone number in encrypted form for as long as tax and accounting laws require, even after your account is deleted (see Section 9.2).
 - **Logs and security records:** kept for a limited period for security, fraud prevention and legal compliance.
