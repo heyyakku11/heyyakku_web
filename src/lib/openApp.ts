@@ -1,7 +1,7 @@
 // "Open in app": browsers cannot tell whether an app is installed, so we try to launch it and
 // fall back to the store if nothing took over.
 
-const ANDROID_PACKAGE = 'com.example.yakku';
+const ANDROID_PACKAGE = 'com.example.yakku_dev';
 const SCHEME = 'yakku';
 
 export const androidStoreUrl =

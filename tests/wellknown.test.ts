@@ -11,7 +11,7 @@ const vercel = JSON.parse(read('vercel.json')) as {
 test('assetlinks.json is valid and targets the Android app', () => {
   const links = JSON.parse(read('public/.well-known/assetlinks.json'));
   assert.equal(links[0].target.namespace, 'android_app');
-  assert.equal(links[0].target.package_name, 'com.example.yakku');
+  assert.equal(links[0].target.package_name, 'com.example.yakku_dev');
   for (const fp of links[0].target.sha256_cert_fingerprints) {
     assert.match(fp, /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/);
   }
