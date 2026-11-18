@@ -25,9 +25,15 @@ export function openInApp(shareCode: string): void {
   const path = `/vote/${encodeURIComponent(shareCode)}`;
 
   if (platform === 'android') {
-    // Android launches the app if present, otherwise follows browser_fallback_url itself.
-    const fallback = encodeURIComponent(androidStoreUrl);
-    window.location.href = `intent://${path}#Intent;scheme=${SCHEME};package=${ANDROID_PACKAGE};S.browser_fallback_url=${fallback};end`;
+    // HTTPS App Links: the intent carries the real website host and scheme=https, so Android
+    // resolves it to the verified app link. If the app is missing (or the in-app browser, e.g.
+    // Instagram, blocks the launch) the browser stays on / returns to this same web page, which
+    // remains fully usable. Must be called from a user click, never on page load.
+    const fallbackUrl = `${window.location.origin}${path}`;
+    window.location.href =
+      `intent://${window.location.host}${path}` +
+      `#Intent;scheme=https;package=${ANDROID_PACKAGE};` +
+      `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
     return;
   }
 

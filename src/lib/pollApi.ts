@@ -285,16 +285,37 @@ export function guestHeaders(token: string | null, extra: Record<string, string>
 export async function fetchSharedContent(shareCode: string, signal?: AbortSignal): Promise<ContentLoadResult> {
   try {
     const guestToken = await ensureGuestToken();
-    const res = await fetch(`${apiBase()}/api/v1/shares/${encodeURIComponent(shareCode)}`, {
+    // TEMPORARY: request/response logging to inspect share-card failures.
+    const API_BASE_URL = apiBase();
+    const requestUrl = `${API_BASE_URL}/api/v1/shares/${encodeURIComponent(shareCode)}`;
+    console.log('Share code:', shareCode);
+    console.log('API base URL:', API_BASE_URL);
+    console.log('Request URL:', requestUrl);
+
+    const res = await fetch(requestUrl, {
       headers: guestHeaders(guestToken),
       credentials: 'include',
       signal,
     });
+
+    console.log('Response status:', res.status);
+
+    const responseText = await res.text();
+
+    console.log('Response body:', responseText);
+
     if (res.status === 404) return { kind: 'not-found' };
     if (!res.ok) return { kind: 'error' };
-    const content = parseSharedContent(await res.json());
+    let json: unknown;
+    try {
+      json = JSON.parse(responseText);
+    } catch {
+      return { kind: 'error' };
+    }
+    const content = parseSharedContent(json);
     return content ? { kind: 'ok', content } : { kind: 'error' };
-  } catch {
+  } catch (err) {
+    console.log('Share fetch failed:', err);
     return { kind: 'error' };
   }
 }
