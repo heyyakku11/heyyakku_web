@@ -4,7 +4,7 @@
 //   POST /api/v1/personality-cards/{shareCode}/votes     { traitIds: [3 ids] }
 // Callers are signed-in users (bearer token) or guests (X-Guest-Token), same as polls and checks.
 
-import { apiBase, ensureGuestToken, guestHeaders } from './pollApi.ts';
+import { apiBase, clearGuestToken, ensureGuestToken, guestHeaders } from './pollApi.ts';
 
 export const REQUIRED_TRAITS = 3;
 
@@ -104,13 +104,8 @@ export async function submitPersonalityVote(shareCode: string, traitIds: string[
       });
       if (res.ok) return { kind: 'ok' };
       if (res.status === 401 && attempt === 0) {
-        // Stale guest identity: drop it and retry once with a fresh guest.
-        try {
-          localStorage.removeItem('yakku_guest_token');
-          localStorage.removeItem('yakku_guest_expires_at');
-        } catch {
-          /* storage unavailable */
-        }
+        // Stale guest identity: drop it and retry once (same idempotency key re-derives the token).
+        clearGuestToken();
         continue;
       }
       if (res.status === 401 || res.status === 403) return { kind: 'auth-required' };

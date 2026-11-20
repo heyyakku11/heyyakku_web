@@ -1,7 +1,7 @@
 // Client for the ASP.NET Core share/vote API. Responses use the
 // `{ success, message, data, errors }` envelope.
 //
-//   POST /api/v1/guests           create a guest identity (when none is stored)
+//   POST /api/v1/guests           create a guest identity (body: { idempotencyKey })
 //   GET  /api/v1/shares/{code}    resolve a share code to a poll or a check
 //   POST /api/v1/votes            vote by share code (poll or check)
 //
@@ -218,6 +218,8 @@ export function parseSharedContent(body: unknown): SharedContentDto | null {
 
 const GUEST_TOKEN_KEY = 'yakku_guest_token';
 const GUEST_EXPIRES_KEY = 'yakku_guest_expires_at';
+/** Stable per-browser key so accidental double creates mint only one guest. */
+const GUEST_IDEMPOTENCY_KEY = 'yakku_guest_idempotency_key';
 
 function readGuestToken(): string | null {
   try {
@@ -231,7 +233,7 @@ function readGuestToken(): string | null {
   }
 }
 
-function clearGuestToken(): void {
+export function clearGuestToken(): void {
   try {
     localStorage.removeItem(GUEST_TOKEN_KEY);
     localStorage.removeItem(GUEST_EXPIRES_KEY);
@@ -240,9 +242,25 @@ function clearGuestToken(): void {
   }
 }
 
+function guestIdempotencyKey(): string {
+  try {
+    const existing = localStorage.getItem(GUEST_IDEMPOTENCY_KEY);
+    if (existing) return existing;
+    const key =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `guest-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(GUEST_IDEMPOTENCY_KEY, key);
+    return key;
+  } catch {
+    return `guest-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+}
+
 /**
  * Returns a guest token for visitors without a Yakku account: the stored one, or a new guest identity
- * from POST /api/v1/guests. The API only returns the raw token when it creates a guest.
+ * from POST /api/v1/guests. The API requires an idempotencyKey and returns the raw token when minting
+ * (or re-deriving after a retry with the same key).
  */
 export async function ensureGuestToken(): Promise<string | null> {
   if (getAccessToken()) return null;
@@ -251,8 +269,9 @@ export async function ensureGuestToken(): Promise<string | null> {
   try {
     const res = await fetch(`${apiBase()}/api/v1/guests`, {
       method: 'POST',
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       credentials: 'include',
+      body: JSON.stringify({ idempotencyKey: guestIdempotencyKey() }),
     });
     if (!res.ok) return null;
     const body = (await res.json()) as { data?: { guestToken?: unknown; expiresAt?: unknown } };
