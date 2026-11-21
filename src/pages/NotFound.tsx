@@ -6,7 +6,7 @@ import { designTokens } from '../design-tokens.js';
 export function NotFound() {
   return (
     <div className="min-h-full flex flex-col" style={{ background: designTokens.colors.bgPage }}>
-      <Navbar minimal />
+      <Navbar />
       <main className="flex-1 flex items-center justify-center px-6 py-24">
         <div className="text-center max-w-sm">
           <div

@@ -23,7 +23,7 @@ export interface LegacyCheckStyle {
 }
 
 /** The sticker on every check card. It is fixed in the app; the API no longer sends one. */
-export const CHECK_STICKER = 'No filter, Just truth';
+export const CHECK_STICKER = 'No filters. Just truth.';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const DEFAULT_BG = '#FFD6E0';

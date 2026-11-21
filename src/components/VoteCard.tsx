@@ -1,27 +1,29 @@
 import { useRef, type CSSProperties, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { resultsLocked, type SharedContentDto } from '../lib/pollApi.ts';
 import { CHECK_STICKER } from '../lib/checkTheme.ts';
 
-// Mirrors the app's check/poll card (mirror_check_card.dart): tinted card, black eyebrow pill, tilted
-// handwritten sticker, bold question, white lettered options and a dashed "Add your own answer" row.
 const ui = {
   accent: '#D02E62',
-  accentSoft: 'rgba(208, 46, 98, 0.14)',
-  ink: '#1B1418',
-  text: '#21191D',
-  muted: 'rgba(33, 25, 29, 0.55)',
+  accentSoft: 'rgba(208, 46, 98, 0.12)',
+  ink: '#111111',
+  text: '#1B1418',
+  muted: 'rgba(27, 20, 24, 0.55)',
+  softMuted: 'rgba(27, 20, 24, 0.42)',
   chip: '#FFFFFF',
-  dash: 'rgba(33, 25, 29, 0.35)',
+  letterBg: 'rgba(27, 20, 24, 0.06)',
+  cream: '#FFF9F6',
   error: '#B42318',
   defaultBg: '#FFD6E0',
-  radius: 14,
+  radius: 18,
   heading: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
   body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  script: "'Pacifico', cursive",
 };
 
 export const CUSTOM_ID = '__custom__';
-export const REASON_MAX = 150;
-const CUSTOM_MAX = 200;
+export const REASON_MAX = 120;
+export const CUSTOM_MAX = 120;
 
 const letter = (index: number) => String.fromCharCode(65 + index);
 
@@ -33,13 +35,23 @@ export function cardBackground(raw: string | undefined): string {
   return ui.defaultBg;
 }
 
-function Badge({ children, dashed = false, filled = false }: { children: ReactNode; dashed?: boolean; filled?: boolean }) {
+export function cardHeading(content: SharedContentDto): string {
+  return content.check?.title?.trim() || (content.contentType === 'POLL' ? 'Poll' : 'Check');
+}
+
+export function pickedLabel(content: SharedContentDto, selected: string | null, customAnswer: string): string {
+  if (selected === CUSTOM_ID) return customAnswer.trim();
+  const opt = content.options.find((o) => o.id === selected);
+  return opt?.text ?? '';
+}
+
+function Badge({ children, filled = false }: { children: ReactNode; filled?: boolean }) {
   return (
     <span
       aria-hidden="true"
       style={{
-        width: 30,
-        height: 30,
+        width: 32,
+        height: 32,
         flexShrink: 0,
         borderRadius: '50%',
         display: 'inline-flex',
@@ -49,9 +61,8 @@ function Badge({ children, dashed = false, filled = false }: { children: ReactNo
         fontWeight: 700,
         fontFamily: ui.body,
         boxSizing: 'border-box',
-        color: filled ? '#fff' : dashed ? 'rgba(33, 25, 29, 0.7)' : ui.text,
-        background: filled ? ui.accent : dashed ? 'transparent' : ui.accentSoft,
-        border: dashed ? `1px dashed ${ui.dash}` : 'none',
+        color: filled ? '#fff' : ui.text,
+        background: filled ? ui.accent : ui.letterBg,
       }}
     >
       {children}
@@ -73,10 +84,9 @@ function EyeOffIcon() {
   );
 }
 
-/** Poll media is only rendered when the API hands out a URL; otherwise a labelled placeholder. */
 function MediaView({ mediaType, url, label }: { mediaType: string; url: string | null; label: string }) {
   const kind = mediaType.toLowerCase();
-  const frame: CSSProperties = { width: '100%', borderRadius: ui.radius, background: 'rgba(255,255,255,0.6)', display: 'block' };
+  const frame: CSSProperties = { width: '100%', borderRadius: ui.radius, background: 'rgba(255,255,255,0.55)', display: 'block' };
   if (url && url.startsWith('https://')) {
     if (kind === 'image') return <img src={url} alt={label} style={{ ...frame, objectFit: 'cover', maxHeight: 320 }} />;
     if (kind === 'video') return <video src={url} controls playsInline style={{ ...frame, maxHeight: 320 }} />;
@@ -90,124 +100,75 @@ function MediaView({ mediaType, url, label }: { mediaType: string; url: string |
   );
 }
 
-function Frame({ background, children }: { background: string; children: ReactNode }) {
+function TitleRow({ content }: { content: SharedContentDto }) {
   return (
-    <section
-      style={{
-        background,
-        borderRadius: 28,
-        padding: '20px 18px 18px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 14,
-        minHeight: 560,
-        boxSizing: 'border-box',
-        width: '100%',
-        fontFamily: ui.body,
-        color: ui.text,
-        boxShadow: '0 8px 18px rgba(33, 25, 29, 0.08)',
-      }}
-    >
-      {children}
-    </section>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+      <h1
+        style={{
+          margin: 0,
+          flex: 1,
+          minWidth: 0,
+          fontFamily: ui.heading,
+          fontWeight: 800,
+          fontSize: 34,
+          lineHeight: 1.05,
+          letterSpacing: -0.8,
+          color: ui.ink,
+          overflowWrap: 'anywhere',
+        }}
+      >
+        {cardHeading(content)}
+      </h1>
+      <span
+        aria-hidden="true"
+        style={{
+          flexShrink: 0,
+          transform: 'rotate(8deg)',
+          marginTop: 4,
+          background: '#fff',
+          border: `1.5px solid ${ui.accent}`,
+          borderRadius: 10,
+          padding: '8px 12px',
+          fontFamily: ui.script,
+          color: ui.accent,
+          fontSize: 15,
+          lineHeight: 1.15,
+          textAlign: 'center',
+          maxWidth: 118,
+          boxShadow: '0 2px 8px rgba(27, 20, 24, 0.06)',
+        }}
+      >
+        {CHECK_STICKER}
+      </span>
+    </div>
   );
 }
 
-function Header({ content }: { content: SharedContentDto }) {
-  const check = content.check;
+function Question({ text }: { text: string }) {
   return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: ui.muted }}>
-        <span
-          aria-hidden="true"
-          style={{
-            width: 26,
-            height: 26,
-            borderRadius: '50%',
-            background: ui.accentSoft,
-            color: ui.accent,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 700,
-            fontSize: 12,
-          }}
-        >
-          ?
-          </span>
-        <span>
-          <strong style={{ color: ui.text }}>A friend</strong> asked you
-          </span>
-      </div>
-      {check && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              alignSelf: 'flex-start',
-              background: '#000',
-              color: 'rgba(255,255,255,0.85)',
-              borderRadius: ui.radius,
-              padding: '6px 10px',
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: 0.7,
-              maxWidth: '55%',
-              overflowWrap: 'anywhere',
-            }}
-          >
-            {check.title}
-          </span>
-          <span
-            style={{
-              transform: 'rotate(-4.5deg)',
-              background: 'rgba(255,255,255,0.72)',
-              border: '1px solid #000',
-              borderRadius: ui.radius,
-              padding: '6px 10px',
-              fontFamily: "'Pacifico', cursive",
-              color: ui.accent,
-              fontSize: 18,
-              lineHeight: 1.15,
-              textAlign: 'center',
-              maxWidth: '55%',
-              overflowWrap: 'anywhere',
-            }}
-          >
-            {CHECK_STICKER}
-          </span>
-        </div>
-      )}
-    </>
-  );
-}
-
-function Question({ text, compact }: { text: string; compact: boolean }) {
-  return (
-    <h1
+    <p
       style={{
         margin: 0,
         fontFamily: ui.heading,
-        fontWeight: 800,
-        fontSize: compact ? 24 : 32,
-        lineHeight: 1.08,
-        letterSpacing: -0.6,
+        fontWeight: 700,
+        fontSize: 18,
+        lineHeight: 1.25,
+        letterSpacing: -0.2,
         color: ui.ink,
         overflowWrap: 'anywhere',
       }}
     >
       {text}
-    </h1>
+    </p>
   );
 }
 
-function Footer({ text = "They'll never know it was you" }: { text?: string }) {
+function AnonymousLine({ text = "Anonymous. They'll never know it was you." }: { text?: string }) {
   return (
     <p
       style={{
         margin: 'auto 0 0',
-        paddingTop: 8,
+        paddingTop: 16,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -225,9 +186,9 @@ function Footer({ text = "They'll never know it was you" }: { text?: string }) {
 const rowBase: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: 10,
+  gap: 12,
   width: '100%',
-  padding: '7px 14px 7px 8px',
+  padding: '12px 16px 12px 10px',
   borderRadius: ui.radius,
   boxSizing: 'border-box',
   textAlign: 'left',
@@ -235,46 +196,56 @@ const rowBase: CSSProperties = {
   fontSize: 15,
   fontWeight: 600,
   color: ui.text,
+  boxShadow: '0 2px 10px rgba(27, 20, 24, 0.06)',
 };
 
-export interface VoteFormState {
+export interface VotePickState {
   selected: string | null;
   customAnswer: string;
-  reason: string;
-  submitting: boolean;
-  error: string | null;
 }
 
-export interface VoteFormHandlers {
+export interface VotePickHandlers {
   onSelect: (id: string) => void;
   onCustomAnswer: (value: string) => void;
-  onReason: (value: string) => void;
-  onSubmit: () => void;
+  /** Advances to the optional reason step — does not submit yet. */
+  onContinue: () => void;
 }
 
-/** The voter's form: pick an option (or write one), optionally say why, send the vote. */
-export function VoteForm({
+/** Step 1: pick a preset option or write a custom answer (required before continuing). */
+export function VotePickStep({
   content,
   form,
   handlers,
 }: {
   content: SharedContentDto;
-  form: VoteFormState;
-  handlers: VoteFormHandlers;
+  form: VotePickState;
+  handlers: VotePickHandlers;
 }) {
-  const { selected, customAnswer, reason, submitting, error } = form;
+  const { selected, customAnswer } = form;
   const customInput = useRef<HTMLInputElement>(null);
   const customSelected = selected === CUSTOM_ID;
-  const canSubmit = (customSelected ? customAnswer.trim() !== '' : !!selected) && !submitting;
+  const canContinue =
+    customSelected ? customAnswer.trim() !== '' : !!selected && selected !== CUSTOM_ID;
   const media = content.poll?.media ?? null;
 
   return (
-    <Frame background={cardBackground(content.check?.backgroundColor)}>
-      <Header content={content} />
+    <section
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        minHeight: '100%',
+        boxSizing: 'border-box',
+        width: '100%',
+        fontFamily: ui.body,
+        color: ui.text,
+      }}
+    >
+      <TitleRow content={content} />
       {media && <MediaView mediaType={media.mediaType} url={media.url} label={content.question} />}
-      <Question text={content.question} compact={!!selected} />
+      <Question text={content.question} />
 
-      <div role="radiogroup" aria-label="Answer options" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div role="radiogroup" aria-label="Answer options" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {content.options.map((opt, index) => {
           const isSelected = selected === opt.id;
           return (
@@ -283,13 +254,12 @@ export function VoteForm({
               type="button"
               role="radio"
               aria-checked={isSelected}
-              disabled={submitting}
               onClick={() => handlers.onSelect(opt.id)}
               style={{
                 ...rowBase,
                 background: ui.chip,
                 border: `2px solid ${isSelected ? ui.accent : 'transparent'}`,
-                cursor: submitting ? 'default' : 'pointer',
+                cursor: 'pointer',
               }}
             >
               <Badge filled={isSelected}>{letter(index)}</Badge>
@@ -297,139 +267,231 @@ export function VoteForm({
             </button>
           );
         })}
-
-        <div
-          role="radio"
-          aria-checked={customSelected}
-          tabIndex={0}
-          onClick={() => {
-            if (submitting) return;
-            handlers.onSelect(CUSTOM_ID);
-            customInput.current?.focus();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              if (e.target === e.currentTarget) {
-                e.preventDefault();
-                handlers.onSelect(CUSTOM_ID);
-                customInput.current?.focus();
-              }
-            }
-          }}
-          style={{
-            ...rowBase,
-            background: customSelected ? ui.chip : 'rgba(255,255,255,0.2)',
-            border: customSelected ? `2px solid ${ui.accent}` : `1.4px dashed ${ui.dash}`,
-            cursor: submitting ? 'default' : 'pointer',
-          }}
-        >
-          <Badge dashed={!customSelected} filled={customSelected}>
-            {letter(content.options.length)}
-          </Badge>
-          {customSelected ? (
-            <input
-              ref={customInput}
-              type="text"
-              value={customAnswer}
-              maxLength={CUSTOM_MAX}
-              disabled={submitting}
-              placeholder="Write your own answer"
-              aria-label="Write your own answer"
-              autoFocus
-              onChange={(e) => handlers.onCustomAnswer(e.target.value)}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                border: 'none',
-                outline: 'none',
-                background: 'transparent',
-                fontFamily: ui.body,
-                fontSize: 15,
-                fontWeight: 600,
-                color: ui.text,
-              }}
-            />
-          ) : (
-            <>
-              <span style={{ flex: 1, fontWeight: 700 }}>Add your own answer</span>
-              <span aria-hidden="true" style={{ fontSize: 20, fontWeight: 400, color: ui.muted }}>
-                +
-              </span>
-            </>
-          )}
-        </div>
       </div>
 
-      {selected && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label htmlFor="vote-reason" style={{ fontSize: 14, fontWeight: 800, color: ui.ink }}>
-            What made you choose this?{' '}
-            <span style={{ fontWeight: 400, color: ui.muted }}>Anonymous · Optional</span>
-          </label>
-          <textarea
-            id="vote-reason"
-            value={reason}
-            maxLength={REASON_MAX}
-            rows={4}
-            disabled={submitting}
-            onChange={(e) => handlers.onReason(e.target.value)}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
+          <input
+            ref={customInput}
+            type="text"
+            value={customAnswer}
+            maxLength={CUSTOM_MAX}
+            placeholder="Write your own answer"
+            aria-label="Write your own answer"
+            onFocus={() => handlers.onSelect(CUSTOM_ID)}
+            onChange={(e) => handlers.onCustomAnswer(e.target.value)}
             style={{
-              width: '100%',
+              flex: 1,
+              minWidth: 0,
+              height: 52,
               boxSizing: 'border-box',
-              resize: 'none',
-              padding: 12,
-              borderRadius: ui.radius,
-              border: 'none',
+              padding: '0 16px',
+              borderRadius: 14,
+              border: `1.6px solid ${customSelected || customAnswer ? ui.accent : 'rgba(27, 20, 24, 0.14)'}`,
               background: ui.chip,
               fontFamily: ui.body,
-              fontSize: 14,
+              fontSize: 15,
+              fontWeight: 600,
               color: ui.text,
               outline: 'none',
             }}
           />
-          <span style={{ alignSelf: 'flex-end', fontSize: 12, color: ui.muted }}>
-            {reason.length} / {REASON_MAX}
-          </span>
+          <button
+            type="button"
+            onClick={handlers.onContinue}
+            disabled={!canContinue}
+            style={{
+              flexShrink: 0,
+              minWidth: 88,
+              height: 52,
+              padding: '0 20px',
+              border: 'none',
+              borderRadius: 14,
+              background: ui.accent,
+              color: '#fff',
+              fontFamily: ui.body,
+              fontSize: 16,
+              fontWeight: 700,
+              opacity: canContinue ? 1 : 0.45,
+              cursor: canContinue ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Vote
+          </button>
         </div>
-      )}
+        {(customSelected || customAnswer.length > 0) && (
+          <span style={{ alignSelf: 'flex-end', fontSize: 12, color: ui.muted }}>
+            {customAnswer.length}/{CUSTOM_MAX}
+          </span>
+        )}
+      </div>
 
-      {error && (
-        <p role="alert" style={{ margin: 0, fontSize: 14, color: ui.error }}>
-          {error}
-        </p>
-      )}
-
-      <button
-        type="button"
-        onClick={handlers.onSubmit}
-        disabled={!canSubmit}
-        aria-busy={submitting}
-        style={{
-          marginTop: selected ? 6 : 'auto',
-          width: '100%',
-          height: 52,
-          border: 'none',
-          borderRadius: 999,
-          background: ui.accent,
-          color: '#fff',
-          fontFamily: ui.body,
-          fontSize: 16,
-          fontWeight: 700,
-          opacity: canSubmit ? 1 : 0.45,
-          cursor: canSubmit ? 'pointer' : 'not-allowed',
-        }}
-      >
-        {submitting ? 'Sending…' : 'Send vote'}
-      </button>
-      <Footer />
-    </Frame>
+      <AnonymousLine />
+    </section>
   );
 }
 
-/**
- * After voting (or when blocked): the options as result bars once the vote-count limit is reached,
- * otherwise only the progress towards it. `notice` is the status line shown under the question.
- */
+/** Step 2: optional reason — Send submits with reason; Skip submits without. */
+export function VoteReasonStep({
+  content,
+  picked,
+  reason,
+  submitting,
+  error,
+  onReason,
+  onSend,
+  onSkip,
+}: {
+  content: SharedContentDto;
+  picked: string;
+  reason: string;
+  submitting: boolean;
+  error: string | null;
+  onReason: (value: string) => void;
+  onSend: () => void;
+  onSkip: () => void;
+}) {
+  const heading = cardHeading(content).toUpperCase();
+
+  return (
+    <div
+      style={{
+        minHeight: '100dvh',
+        background: ui.cream,
+        display: 'flex',
+        justifyContent: 'center',
+        fontFamily: ui.body,
+        color: ui.text,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 440,
+          minHeight: '100dvh',
+          boxSizing: 'border-box',
+          padding: '28px 22px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <span
+          style={{
+            alignSelf: 'flex-start',
+            display: 'inline-block',
+            maxWidth: '100%',
+            background: ui.accentSoft,
+            color: ui.accent,
+            borderRadius: 999,
+            padding: '8px 14px',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: 0.2,
+            overflowWrap: 'anywhere',
+            lineHeight: 1.35,
+          }}
+        >
+          {heading} · You picked &ldquo;{picked}&rdquo;
+        </span>
+
+        <h1
+          style={{
+            margin: '22px 0 8px',
+            fontFamily: ui.heading,
+            fontSize: 32,
+            fontWeight: 800,
+            letterSpacing: -0.7,
+            lineHeight: 1.1,
+            color: ui.ink,
+          }}
+        >
+          Want to tell them why?
+        </h1>
+        <p style={{ margin: 0, fontSize: 15, color: ui.muted, lineHeight: 1.4 }}>
+          Optional. Still anonymous. Reasons are what they&apos;ll read first.
+        </p>
+
+        <textarea
+          value={reason}
+          maxLength={REASON_MAX}
+          rows={5}
+          disabled={submitting}
+          placeholder="You always know what to say when things go wrong"
+          aria-label="Optional reason"
+          onChange={(e) => onReason(e.target.value)}
+          style={{
+            marginTop: 22,
+            width: '100%',
+            boxSizing: 'border-box',
+            resize: 'none',
+            padding: 16,
+            borderRadius: 16,
+            border: '1.5px solid rgba(27, 20, 24, 0.14)',
+            background: ui.chip,
+            fontFamily: ui.body,
+            fontSize: 16,
+            fontWeight: 500,
+            color: ui.text,
+            outline: 'none',
+            lineHeight: 1.4,
+          }}
+        />
+        <span style={{ alignSelf: 'flex-end', marginTop: 6, fontSize: 12, color: ui.muted }}>
+          {reason.length}/{REASON_MAX}
+        </span>
+
+        {error && (
+          <p role="alert" style={{ margin: '12px 0 0', fontSize: 14, color: ui.error }}>
+            {error}
+          </p>
+        )}
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 32 }}>
+          <button
+            type="button"
+            onClick={onSend}
+            disabled={submitting}
+            aria-busy={submitting}
+            style={{
+              width: '100%',
+              height: 56,
+              border: 'none',
+              borderRadius: 999,
+              background: ui.accent,
+              color: '#fff',
+              fontFamily: ui.body,
+              fontSize: 17,
+              fontWeight: 700,
+              opacity: submitting ? 0.7 : 1,
+              cursor: submitting ? 'default' : 'pointer',
+            }}
+          >
+            {submitting ? 'Sending…' : 'Send'}
+          </button>
+          <button
+            type="button"
+            onClick={onSkip}
+            disabled={submitting}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: ui.muted,
+              fontFamily: ui.body,
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: submitting ? 'default' : 'pointer',
+              padding: 10,
+            }}
+          >
+            Skip
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Kept for owner / closed / expired notice states on the vote route. */
 export function VoteOutcome({
   content,
   notice,
@@ -447,10 +509,21 @@ export function VoteOutcome({
   const needed = Math.max(content.stats.minVotesToReveal, 1);
 
   return (
-    <Frame background={cardBackground(content.check?.backgroundColor)}>
-      <Header content={content} />
+    <section
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16,
+        minHeight: '100%',
+        boxSizing: 'border-box',
+        width: '100%',
+        fontFamily: ui.body,
+        color: ui.text,
+      }}
+    >
+      <TitleRow content={content} />
       {media && <MediaView mediaType={media.mediaType} url={media.url} label={content.question} />}
-      <Question text={content.question} compact />
+      <Question text={content.question} />
       <p
         role="status"
         style={{
@@ -466,7 +539,7 @@ export function VoteOutcome({
 
       {showOptions && locked && (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {content.options.map((opt, index) => {
               const mine = opt.id === myVote?.optionId || opt.isSelected;
               return (
@@ -488,7 +561,7 @@ export function VoteOutcome({
       )}
 
       {showOptions && !locked && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {content.options.map((opt, index) => {
             const pct = Math.round(opt.percentage ?? 0);
             const mine = opt.id === myVote?.optionId || opt.isSelected;
@@ -507,7 +580,7 @@ export function VoteOutcome({
                   aria-hidden="true"
                   style={{ position: 'absolute', inset: 0, width: `${pct}%`, background: ui.accentSoft }}
                 />
-                <span style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+                <span style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                   <Badge filled={mine}>{letter(index)}</Badge>
                   <span style={{ flex: 1, overflowWrap: 'anywhere' }}>{opt.text}</span>
                   <span style={{ fontWeight: 800 }}>{pct}%</span>
@@ -528,7 +601,14 @@ export function VoteOutcome({
         </div>
       )}
 
-      <Footer text={myVote ? 'Your vote stays anonymous' : "They'll never know it was you"} />
-    </Frame>
+      <AnonymousLine text={myVote ? 'Your vote stays anonymous' : "Anonymous. They'll never know it was you."} />
+      <p style={{ margin: 0, fontSize: 12, color: ui.softMuted, textAlign: 'center', lineHeight: 1.4 }}>
+        By answering you agree to the{' '}
+        <Link to="/terms" style={{ color: ui.accent, fontWeight: 600, textDecoration: 'none' }}>
+          Terms
+        </Link>
+        . 18+ only.
+      </p>
+    </section>
   );
 }

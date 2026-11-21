@@ -26,7 +26,7 @@ test('the card is driven by the backend theme', () => {
   assert.equal(t.background, '#ECE3FF');
   assert.equal(t.headingColor, '#111111');
   assert.equal(t.questionColor, '#222222');
-  assert.equal(t.sticker, 'No filter, Just truth');
+  assert.equal(t.sticker, 'No filters. Just truth.');
   assert.equal(t.optionBackground, '#333333');
   assert.equal(t.optionText, '#FAFAFA');
 });
@@ -53,7 +53,7 @@ test('legacy checks and unusable themes render from the flat fields', () => {
     const t = resolveCheckTheme(raw, legacy);
     assert.equal(t.heading, 'Loyalty Check');
     assert.equal(t.background, '#FFEFC2');
-    assert.equal(t.sticker, 'No filter, Just truth');
+    assert.equal(t.sticker, 'No filters. Just truth.');
     assert.equal(t.checkType, null);
   }
 });

@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AfterVote } from '../components/AfterVote.tsx';
-import { Navbar } from '../components/Navbar.tsx';
-import { Footer } from '../components/Footer.tsx';
-import { VoteForm, VoteOutcome, CUSTOM_ID } from '../components/VoteCard.tsx';
+import { FlagIcon, ReportCardFlow } from '../components/ReportCardFlow.tsx';
+import {
+  VotePickStep,
+  VoteReasonStep,
+  CUSTOM_ID,
+  cardBackground,
+  pickedLabel,
+} from '../components/VoteCard.tsx';
+import { VoteEdgeCase } from '../components/VoteEdgeCase.tsx';
+import { isLoggedIn } from '../lib/authStore.ts';
+import { saveAuthNext } from '../lib/authRedirect.ts';
 import {
   fetchSharedContent,
   getVotePhase,
@@ -12,23 +20,24 @@ import {
   type SharedContentDto,
   type VoteChoice,
 } from '../lib/pollApi.ts';
+import { voteResultPath } from '../lib/voteLinks.ts';
 
 type LoadState = { kind: 'loading' } | { kind: 'not-found' } | { kind: 'error' } | { kind: 'ok'; content: SharedContentDto };
+type VoteStep = 'pick' | 'reason';
+/** Edge panel shown instead of the votable card (already answered / closed / unavailable). */
+type EdgeState = 'already-answered' | 'closed' | 'unavailable' | null;
 
-// Palette for the page chrome and notices; the poll/check card itself lives in VoteCard.tsx.
 const app = {
   primary: '#D02E62',
-  primaryTint: 'rgba(208, 46, 98, 0.08)',
-  coral: '#E07A5F',
-  text: '#334155',
-  muted: '#64748B',
-  surface: '#FFF9F6',
-  page: '#FFF9F6',
+  text: '#1B1418',
+  muted: 'rgba(27, 20, 24, 0.55)',
   card: '#FFFFFF',
-  mist: '#F1F5F4',
-  error: '#B42318',
-  radius: 12,
+  mist: 'rgba(27, 20, 24, 0.12)',
+  pageFallback: '#FFD6E0',
+  radius: 16,
   font: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  heading: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  brand: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
 };
 
 const buttonBase: CSSProperties = {
@@ -37,7 +46,7 @@ const buttonBase: CSSProperties = {
   justifyContent: 'center',
   width: '100%',
   height: 52,
-  borderRadius: app.radius,
+  borderRadius: 999,
   fontFamily: app.font,
   fontSize: 16,
   fontWeight: 600,
@@ -45,84 +54,169 @@ const buttonBase: CSSProperties = {
   boxSizing: 'border-box',
 };
 
-function Shell({ children }: { children: ReactNode }) {
+function YakkuMark() {
   return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', background: app.page }}>
-      <Navbar minimal />
-      <main
+    <Link to="/" aria-label="Yakku home" style={{ display: 'inline-flex', alignItems: 'baseline', textDecoration: 'none', color: app.text }}>
+      <span
         style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          padding: '96px 16px 48px',
+          fontFamily: app.brand,
+          fontSize: 28,
+          fontWeight: 800,
+          letterSpacing: -0.6,
+          lineHeight: 1,
         }}
       >
-        <div style={{ width: '100%', maxWidth: 440, fontFamily: app.font }}>{children}</div>
-      </main>
-      <Footer minimal />
-    </div>
+        Yakku
+      </span>
+      <span
+        aria-hidden="true"
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: 2,
+          background: app.primary,
+          marginLeft: 2,
+          alignSelf: 'flex-end',
+          marginBottom: 4,
+        }}
+      />
+    </Link>
   );
 }
 
-function Card({ children }: { children: ReactNode }) {
+function VoteChrome({
+  background,
+  onReport,
+  children,
+}: {
+  background: string;
+  onReport?: () => void;
+  children: ReactNode;
+}) {
   return (
     <div
       style={{
-        background: app.card,
-        borderRadius: app.radius,
-        border: `1px solid ${app.mist}`,
-        boxShadow: '0 1px 3px rgba(51, 65, 85, 0.08)',
-        padding: 12,
+        minHeight: '100dvh',
+        background,
         display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        boxSizing: 'border-box',
-        width: '100%',
+        justifyContent: 'center',
+        fontFamily: app.font,
+        color: app.text,
       }}
     >
-      {children}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 440,
+          minHeight: '100dvh',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '18px 20px 28px',
+        }}
+      >
+        <header
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 22,
+            flexShrink: 0,
+          }}
+        >
+          <YakkuMark />
+          {onReport ? (
+            <button
+              type="button"
+              onClick={onReport}
+              aria-label="Report this card"
+              style={{
+                width: 40,
+                height: 40,
+                border: 'none',
+                background: 'transparent',
+                color: app.text,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                borderRadius: 12,
+              }}
+            >
+              <FlagIcon size={22} />
+            </button>
+          ) : (
+            <span style={{ width: 40 }} />
+          )}
+        </header>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>{children}</main>
+      </div>
     </div>
   );
 }
 
-function Notice({ title, body, retry }: { title: string; body: string; retry?: () => void }) {
+function Notice({
+  title,
+  body,
+  retry,
+  background = app.pageFallback,
+}: {
+  title: string;
+  body: string;
+  retry?: () => void;
+  background?: string;
+}) {
   return (
-    <Card>
-      <h1 style={{ fontSize: 16, fontWeight: 800, color: app.text, margin: 0 }}>{title}</h1>
-      <p style={{ fontSize: 14, color: app.muted, margin: 0, lineHeight: 1.4 }}>{body}</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
-        {retry && (
-          <button
-            type="button"
-            onClick={retry}
-            style={{ ...buttonBase, background: app.primary, color: '#fff', border: 'none', cursor: 'pointer' }}
+    <VoteChrome background={background}>
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.72)',
+          borderRadius: app.radius,
+          padding: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+        }}
+      >
+        <h1 style={{ fontSize: 20, fontWeight: 800, color: app.text, margin: 0, fontFamily: app.heading }}>{title}</h1>
+        <p style={{ fontSize: 14, color: app.muted, margin: 0, lineHeight: 1.4 }}>{body}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 4 }}>
+          {retry && (
+            <button
+              type="button"
+              onClick={retry}
+              style={{ ...buttonBase, background: app.primary, color: '#fff', border: 'none', cursor: 'pointer' }}
+            >
+              Try again
+            </button>
+          )}
+          <Link
+            to="/"
+            style={{ ...buttonBase, border: `1.5px solid ${app.mist}`, color: app.text, background: app.card }}
           >
-            Try again
-          </button>
-        )}
-        <Link
-          to="/"
-          style={{ ...buttonBase, border: `1.5px solid ${app.mist}`, color: app.text, background: app.card }}
-        >
-          Back to Yakku
-        </Link>
+            Back to Yakku
+          </Link>
+        </div>
       </div>
-    </Card>
+    </VoteChrome>
   );
 }
 
 export function Vote() {
-  const { pollId: shareCode } = useParams<{ pollId: string }>();
+  const [searchParams] = useSearchParams();
+  const shareCode = searchParams.get('share_code') ?? undefined;
   const navigate = useNavigate();
   const [state, setState] = useState<LoadState>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
+  const [step, setStep] = useState<VoteStep>('pick');
   const [selected, setSelected] = useState<string | null>(null);
   const [customAnswer, setCustomAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [voted, setVoted] = useState(false);
+  const [edge, setEdge] = useState<EdgeState>(null);
   const [reason, setReason] = useState('');
   const [voteError, setVoteError] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
   const inFlight = useRef(false);
 
   useEffect(() => {
@@ -136,69 +230,119 @@ export function Vote() {
   }, [shareCode, reloadKey]);
 
   if (!isShareCode(shareCode)) {
-    return (
-      <Shell>
-        <Notice title="Not found" body="This link may have been removed or might be broken." />
-      </Shell>
-    );
+    return <VoteEdgeCase kind="unavailable" />;
   }
 
   if (state.kind === 'loading') {
     return (
-      <Shell>
-        <p role="status" style={{ textAlign: 'center', fontSize: 14, color: app.muted }}>
+      <VoteChrome background={app.pageFallback}>
+        <p role="status" style={{ textAlign: 'center', fontSize: 14, color: app.muted, marginTop: 48 }}>
           Loading…
         </p>
-      </Shell>
+      </VoteChrome>
     );
   }
 
   if (state.kind === 'not-found') {
-    return (
-      <Shell>
-        <Notice title="Not found" body="This poll or check may have been removed or the link might be broken." />
-      </Shell>
-    );
+    return <VoteEdgeCase kind="unavailable" />;
   }
 
   if (state.kind === 'error') {
     return (
-      <Shell>
-        <Notice
-          title="Couldn't load this"
-          body="Something went wrong while contacting Yakku. Please try again."
-          retry={() => {
-            setState({ kind: 'loading' });
-            setReloadKey((k) => k + 1);
-          }}
-        />
-      </Shell>
+      <Notice
+        title="Couldn't load this"
+        body="Something went wrong while contacting Yakku. Please try again."
+        retry={() => {
+          setState({ kind: 'loading' });
+          setReloadKey((k) => k + 1);
+        }}
+      />
     );
   }
 
   const { content } = state;
-  const isCheck = content.contentType === 'CHECK';
-  const noun = isCheck ? 'check' : 'poll';
   const phase = getVotePhase(content);
+  const background = cardBackground(content.check?.backgroundColor);
+  const toLanding = () => navigate('/');
+  const askOwn = () => navigate('/live-check');
+  const resultPath = voteResultPath(shareCode);
+  const seeWhatOthers = () => {
+    if (isLoggedIn()) {
+      navigate(resultPath);
+      return;
+    }
+    saveAuthNext(resultPath);
+    navigate(`/auth?next=${encodeURIComponent(resultPath)}`);
+  };
 
-  if (phase === 'unavailable') {
+  const reportFlow = (
+    <ReportCardFlow
+      open={reportOpen}
+      onClose={() => setReportOpen(false)}
+      payload={{
+        shareCode: content.shareCode || shareCode,
+        contentType: content.contentType,
+        contentId: content.contentId,
+        question: content.question,
+      }}
+    />
+  );
+
+  // Edge panels (already answered / closed / unavailable) — including conflict from submit.
+  const edgeKind: EdgeState =
+    edge ??
+    (phase === 'voted'
+      ? 'already-answered'
+      : phase === 'expired' || phase === 'closed'
+        ? 'closed'
+        : phase === 'unavailable' || phase === 'owner'
+          ? 'unavailable'
+          : null);
+
+  if (edgeKind) {
+    return <VoteEdgeCase kind={edgeKind} onAsk={askOwn} />;
+  }
+
+  // Fresh vote this session → confirmation CTAs (Not now / See others / Your Turn).
+  if (voted) {
     return (
-      <Shell>
-        <Notice title={`This ${noun} is unavailable`} body={`This ${noun} isn't available for voting.`} />
-      </Shell>
+      <AfterVote
+        title="Sent. Anonymously."
+        subtitle="They'll never know it was you."
+        seeResults={{
+          label: 'See what others are saying',
+          sub: "Nobody ever knows it's you",
+          onClick: seeWhatOthers,
+        }}
+        yourTurn={{
+          label: 'Your Turn',
+          sub: 'Find out what your friends say about you',
+          onClick: askOwn,
+        }}
+        onDismiss={toLanding}
+        dismissLabel="Not now"
+      />
     );
   }
 
-  const handleSubmit = async () => {
+  const buildChoice = (): VoteChoice | null => {
     const custom = customAnswer.trim();
-    let choice: VoteChoice | null = null;
-    if (selected === CUSTOM_ID) choice = custom ? { customAnswer: custom } : null;
-    else if (selected) choice = { optionId: selected };
+    if (selected === CUSTOM_ID) return custom ? { customAnswer: custom } : null;
+    if (selected) return { optionId: selected };
+    return null;
+  };
+
+  const handleSubmit = async (withReason: boolean) => {
+    const choice = buildChoice();
     if (!choice || inFlight.current || voted) return;
     inFlight.current = true;
     setSubmitting(true);
     setVoteError(null);
-    const result = await submitVote(content.shareCode || shareCode, choice, reason);
+    const result = await submitVote(
+      content.shareCode || shareCode,
+      choice,
+      withReason ? reason : '',
+    );
     inFlight.current = false;
     setSubmitting(false);
     switch (result.kind) {
@@ -209,7 +353,8 @@ export function Vote() {
         setVoteError('Your vote could not be accepted right now. Please try again in a moment.');
         break;
       case 'conflict':
-        setVoteError(result.message ?? `You can't vote on this ${noun} again, or it is no longer open.`);
+        // Same device/number already answered — show the edge panel, not a fresh-send confirmation.
+        setEdge('already-answered');
         break;
       case 'invalid':
         setVoteError(result.message ?? 'Your vote could not be accepted. Please check your answer and try again.');
@@ -222,48 +367,54 @@ export function Vote() {
     }
   };
 
-  if (voted || phase === 'voted') {
-    // After any card vote: the same confirmation screen for everyone, whatever the vote count or pick.
-    // No results or weekly checks here; every button leads to the Yakku landing page.
-    const toLanding = () => navigate('/');
-    return (
-      <AfterVote
-        title={voted ? 'Sent. Anonymously.' : "You've already voted."}
-        seeResults={{ label: 'See what others are saying', sub: 'Nobody ever knows it’s you', onClick: toLanding }}
-        yourTurn={{ label: 'Your Turn', sub: 'Find out what your friends say about you', onClick: toLanding }}
-        onDismiss={toLanding}
-      />
-    );
-  }
+  const goToReason = () => {
+    if (!buildChoice()) return;
+    setVoteError(null);
+    setStep('reason');
+  };
 
-  if (phase !== 'votable') {
-    const notice =
-      phase === 'owner'
-        ? `This is your ${noun}. Open the Yakku app to see its results.`
-        : `This ${noun} ${phase === 'expired' ? 'has expired' : 'is closed'}. Voting is no longer available.`;
+  if (step === 'reason') {
+    const picked = pickedLabel(content, selected, customAnswer);
     return (
-      <Shell>
-        <VoteOutcome content={content} notice={notice} noticeTone="muted" showOptions={false} />
-      </Shell>
+      <>
+        <VoteReasonStep
+          content={content}
+          picked={picked}
+          reason={reason}
+          submitting={submitting}
+          error={voteError}
+          onReason={setReason}
+          onSend={() => handleSubmit(true)}
+          onSkip={() => {
+            setReason('');
+            void handleSubmit(false);
+          }}
+        />
+      </>
     );
   }
 
   return (
-    <Shell>
-      <VoteForm
-        content={content}
-        form={{ selected, customAnswer, reason, submitting, error: voteError }}
-        handlers={{
-          onSelect: setSelected,
-          onCustomAnswer: (value) => {
-            setCustomAnswer(value);
-            setSelected(CUSTOM_ID);
-          },
-          onReason: setReason,
-          onSubmit: handleSubmit,
-        }}
-      />
-    </Shell>
+    <>
+      <VoteChrome background={background} onReport={() => setReportOpen(true)}>
+        <VotePickStep
+          content={content}
+          form={{ selected, customAnswer }}
+          handlers={{
+            onSelect: (id) => {
+              setSelected(id);
+              if (id !== CUSTOM_ID) setCustomAnswer('');
+            },
+            onCustomAnswer: (value) => {
+              setCustomAnswer(value);
+              setSelected(CUSTOM_ID);
+            },
+            onContinue: goToReason,
+          }}
+        />
+      </VoteChrome>
+      {reportFlow}
+    </>
   );
 }
 

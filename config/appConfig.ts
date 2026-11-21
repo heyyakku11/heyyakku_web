@@ -96,7 +96,8 @@ export function buildAppleAssociation(settings: AppSettings, teamId: string) {
       details: [
         {
           appIDs: [`${teamId}.${settings.ios.bundleId}`],
-          components: [{ '/': '/vote/*' }],
+          // `/vote` covers /vote?share_code=…; `/vote/*` keeps legacy /vote/{code} links.
+          components: [{ '/': '/vote' }, { '/': '/vote/*' }],
         },
       ],
     },

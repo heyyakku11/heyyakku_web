@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Note: import useLocation if adding route-aware nav links
 import { designTokens } from '../design-tokens.js';
 
-interface NavbarProps {
-  minimal?: boolean;
-}
-
-export function Navbar({ minimal = false }: NavbarProps) {
+export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -56,25 +52,7 @@ export function Navbar({ minimal = false }: NavbarProps) {
             Yakku
           </span>
         </Link>
-
-        {/* Minimal Mode: Back Link */}
-        {minimal && (
-          <Link
-            to="/"
-            className="text-sm font-medium transition-colors duration-150"
-            style={{ color: designTokens.colors.textMuted }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = designTokens.colors.primary;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = designTokens.colors.textMuted;
-            }}
-          >
-            ← Back to Yakku
-          </Link>
-        )}
       </div>
-
     </nav>
   );
 }

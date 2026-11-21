@@ -67,7 +67,7 @@ interface LegalDocumentProps {
 export function LegalDocument({ title, effective, lastUpdated, markdown }: LegalDocumentProps) {
   return (
     <div className="min-h-full flex flex-col" style={{ background: designTokens.colors.bgWhite }}>
-      <Navbar minimal />
+      <Navbar />
       <main className="legal-main">
         <article className="legal-article" style={{ color: designTokens.colors.textMuted }}>
           <h1

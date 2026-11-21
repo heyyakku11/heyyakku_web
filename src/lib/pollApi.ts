@@ -3,10 +3,11 @@
 //
 //   POST /api/v1/guests           create a guest identity (body: { idempotencyKey })
 //   GET  /api/v1/shares/{code}    resolve a share code to a poll or a check
-//   POST /api/v1/votes            vote by share code (poll or check)
+//   POST /api/v1/guest/votes      web guest vote by share code (poll or check)
 //
-// Visitors act as guests: the stored guest token is sent as `X-Guest-Token`. Signed-in users send their
-// bearer token instead (see authStore.ts).
+// Web share voting is guest-only (`POST /api/v1/guest/votes` + `X-Guest-Token`).
+// Signed-in web flows (create check, results) still send Bearer via guestHeaders (see authStore.ts).
+// The mobile app casts votes on `POST /api/v1/votes` with JWT only.
 
 import { getAccessToken } from './authStore.ts';
 
@@ -62,7 +63,7 @@ export interface CheckDetailsDto {
 export interface SharedContentDto {
   contentType: ContentType;
   contentId: string;
-  /** Opaque code carried by shared links (`/vote/{shareCode}`). */
+  /** Opaque code carried by shared links (`/vote?share_code=…`). */
   shareCode: string;
   question: string;
   status: string;
@@ -258,12 +259,13 @@ function guestIdempotencyKey(): string {
 }
 
 /**
- * Returns a guest token for visitors without a Yakku account: the stored one, or a new guest identity
- * from POST /api/v1/guests. The API requires an idempotencyKey and returns the raw token when minting
- * (or re-deriving after a retry with the same key).
+ * Returns a guest token: the stored one, or a new guest from POST /api/v1/guests.
+ * By default skips minting when a JWT is present (signed-in create/check flows).
+ * Pass `evenIfSignedIn: true` for web share voting, which is always guest identity.
+ * Never sends Authorization on the mint request (backend rejects authenticated guest create).
  */
-export async function ensureGuestToken(): Promise<string | null> {
-  if (getAccessToken()) return null;
+export async function ensureGuestToken(options?: { evenIfSignedIn?: boolean }): Promise<string | null> {
+  if (!options?.evenIfSignedIn && getAccessToken()) return null;
   const existing = readGuestToken();
   if (existing) return existing;
   try {
@@ -290,6 +292,7 @@ export async function ensureGuestToken(): Promise<string | null> {
   }
 }
 
+/** JWT preferred, else guest — for signed-in web flows (create check, results). */
 export function guestHeaders(token: string | null, extra: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = { Accept: 'application/json', ...extra };
   const access = getAccessToken();
@@ -298,51 +301,49 @@ export function guestHeaders(token: string | null, extra: Record<string, string>
   return headers;
 }
 
+/** Guest-only headers for web share voting — never sends Authorization. */
+export function guestOnlyHeaders(token: string | null, extra: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = { Accept: 'application/json', ...extra };
+  if (token) headers['X-Guest-Token'] = token;
+  return headers;
+}
+
 // ---------------------------------------------------------------- shared content
 
-/** Loads the poll or check behind a share code, creating a guest first if the visitor has none. */
-export async function fetchSharedContent(shareCode: string, signal?: AbortSignal): Promise<ContentLoadResult> {
-  try {
-    const guestToken = await ensureGuestToken();
-    // TEMPORARY: request/response logging to inspect share-card failures.
-    const API_BASE_URL = apiBase();
-    const requestUrl = `${API_BASE_URL}/api/v1/shares/${encodeURIComponent(shareCode)}`;
-    console.log('Share code:', shareCode);
-    console.log('API base URL:', API_BASE_URL);
-    console.log('Request URL:', requestUrl);
+export type SharedContentViewer = 'guest' | 'session';
 
-    const res = await fetch(requestUrl, {
-      headers: guestHeaders(guestToken),
+/**
+ * Loads the poll or check behind a share code.
+ * `guest` (default): X-Guest-Token only — matches web vote identity.
+ * `session`: prefer JWT when signed in (post-auth results).
+ */
+export async function fetchSharedContent(
+  shareCode: string,
+  signal?: AbortSignal,
+  viewer: SharedContentViewer = 'guest',
+): Promise<ContentLoadResult> {
+  try {
+    const asGuest = viewer === 'guest';
+    const guestToken = await ensureGuestToken(asGuest ? { evenIfSignedIn: true } : undefined);
+    const headers = asGuest ? guestOnlyHeaders(guestToken) : guestHeaders(guestToken);
+    const res = await fetch(`${apiBase()}/api/v1/shares/${encodeURIComponent(shareCode)}`, {
+      headers,
       credentials: 'include',
       signal,
     });
-
-    console.log('Response status:', res.status);
-
-    const responseText = await res.text();
-
-    console.log('Response body:', responseText);
-
     if (res.status === 404) return { kind: 'not-found' };
     if (!res.ok) return { kind: 'error' };
-    let json: unknown;
-    try {
-      json = JSON.parse(responseText);
-    } catch {
-      return { kind: 'error' };
-    }
+    const json: unknown = await res.json();
     const content = parseSharedContent(json);
     return content ? { kind: 'ok', content } : { kind: 'error' };
-  } catch (err) {
-    console.log('Share fetch failed:', err);
+  } catch {
     return { kind: 'error' };
   }
 }
 
 export type VoteChoice = { optionId: string } | { customAnswer: string };
 
-// POST /api/v1/votes  body: { shareCode, optionId | customAnswer, reason? }
-// The backend decides whether the vote is valid and returns the content as the voter now sees it.
+/** Web guest voting: POST /api/v1/guest/votes with X-Guest-Token only. */
 export async function submitVote(shareCode: string, choice: VoteChoice, reason?: string): Promise<VoteResult> {
   const body = JSON.stringify({
     shareCode,
@@ -352,10 +353,11 @@ export async function submitVote(shareCode: string, choice: VoteChoice, reason?:
 
   try {
     for (let attempt = 0; attempt < 2; attempt++) {
-      const guestToken = await ensureGuestToken();
-      const res = await fetch(`${apiBase()}/api/v1/votes`, {
+      const guestToken = await ensureGuestToken({ evenIfSignedIn: true });
+      if (!guestToken) return { kind: 'auth-required' };
+      const res = await fetch(`${apiBase()}/api/v1/guest/votes`, {
         method: 'POST',
-        headers: guestHeaders(guestToken, { 'Content-Type': 'application/json' }),
+        headers: guestOnlyHeaders(guestToken, { 'Content-Type': 'application/json' }),
         credentials: 'include',
         body,
       });

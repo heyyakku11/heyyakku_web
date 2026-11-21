@@ -247,7 +247,7 @@ export function CardResult() {
           Voting is still on, so there is no result yet. Cast your vote and check back when it ends.
         </p>
         <div style={{ flex: 1 }} />
-        <Link to={`/vote/${encodeURIComponent(result.shareCode)}`} style={primaryButton}>
+        <Link to={`/vote?share_code=${encodeURIComponent(result.shareCode)}`} style={primaryButton}>
           Vote now
         </Link>
       </Page>

@@ -2,6 +2,7 @@
 // fall back to the store if nothing took over.
 
 import { appConfig } from 'virtual:app-config';
+import { votePath } from './voteLinks.ts';
 
 // Package name comes from config/appsettings.{environment}.json (see config/appConfigPlugin.ts).
 const ANDROID_PACKAGE = appConfig.android.packageName;
@@ -22,7 +23,7 @@ export function mobilePlatform(): MobilePlatform {
 
 export function openInApp(shareCode: string): void {
   const platform = mobilePlatform();
-  const path = `/vote/${encodeURIComponent(shareCode)}`;
+  const path = votePath(shareCode);
 
   if (platform === 'android') {
     // HTTPS App Links: the intent carries the real website host and scheme=https, so Android

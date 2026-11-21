@@ -83,7 +83,7 @@ export function renderPreviewHtml(opts: {
 }): string {
   const { poll, pollId, siteUrl } = opts;
   const pollUrl = `${siteUrl}/poll/${pollId}`;
-  const voteUrl = `${siteUrl}/vote/${poll?.shareCode || pollId}`;
+  const voteUrl = `${siteUrl}/vote?share_code=${encodeURIComponent(poll?.shareCode || pollId)}`;
 
   const title = poll ? truncate(poll.question, 120) : `${SITE_NAME} — Anonymous Polling`;
   const description = !poll

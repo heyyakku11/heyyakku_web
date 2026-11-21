@@ -1,4 +1,5 @@
 // Session tokens for a signed-in Yakku user (issued by POST /api/v1/auth/verify).
+// JWT tokens live in sessionStorage only (cleared when the tab/window closes).
 // Visitors who never sign in keep using the guest token managed in pollApi.ts.
 
 const ACCESS_KEY = 'yakku_access_token';
@@ -13,7 +14,7 @@ export interface AuthTokens {
 
 function read(key: string): string | null {
   try {
-    return localStorage.getItem(key);
+    return sessionStorage.getItem(key);
   } catch {
     return null;
   }
@@ -21,11 +22,23 @@ function read(key: string): string | null {
 
 let memoryAccess: string | null = null;
 
-export function saveTokens(tokens: AuthTokens): void {
+function clearLegacyLocalTokens(): void {
   try {
-    localStorage.setItem(ACCESS_KEY, tokens.accessToken);
-    localStorage.setItem(REFRESH_KEY, tokens.refreshToken);
-    localStorage.setItem(ACCESS_EXPIRES_KEY, String(Date.now() + tokens.accessTokenExpiresInSeconds * 1000));
+    localStorage.removeItem(ACCESS_KEY);
+    localStorage.removeItem(REFRESH_KEY);
+    localStorage.removeItem(ACCESS_EXPIRES_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function saveTokens(tokens: AuthTokens): void {
+  clearLegacyLocalTokens();
+  try {
+    sessionStorage.setItem(ACCESS_KEY, tokens.accessToken);
+    sessionStorage.setItem(REFRESH_KEY, tokens.refreshToken);
+    sessionStorage.setItem(ACCESS_EXPIRES_KEY, String(Date.now() + tokens.accessTokenExpiresInSeconds * 1000));
+    memoryAccess = tokens.accessToken;
   } catch {
     /* storage unavailable: the session lasts only for this page view */
     memoryAccess = tokens.accessToken;
@@ -53,10 +66,11 @@ export function isLoggedIn(): boolean {
 export function clearTokens(): void {
   memoryAccess = null;
   try {
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
-    localStorage.removeItem(ACCESS_EXPIRES_KEY);
+    sessionStorage.removeItem(ACCESS_KEY);
+    sessionStorage.removeItem(REFRESH_KEY);
+    sessionStorage.removeItem(ACCESS_EXPIRES_KEY);
   } catch {
     /* storage unavailable */
   }
+  clearLegacyLocalTokens();
 }

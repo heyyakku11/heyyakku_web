@@ -39,7 +39,7 @@ export function Poll() {
   if (!currentPoll) {
     return (
       <div className="min-h-full flex flex-col" style={{ background: designTokens.colors.bgPage }}>
-        <Navbar minimal />
+        <Navbar />
         <main className="flex-1 flex items-center justify-center px-6 py-24">
           <div className="text-center max-w-sm">
             <div
@@ -88,7 +88,7 @@ export function Poll() {
       className="min-h-full flex flex-col"
       style={{ background: designTokens.colors.bgSecondary }}
     >
-      <Navbar minimal />
+      <Navbar />
       <main className="flex-1 flex items-center justify-center px-6 py-24">
         <div className="w-full max-w-md animate-fade-in" style={{ opacity: 0 }}>
           <div className="text-center mb-8">

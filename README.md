@@ -142,7 +142,6 @@ src/
 - **Brand Mark**: Rendered in `Pacifico` script (26px).
 - **Navigation Links**: FAQ (smooth scroll to Process), About, and "Download App" CTA button.
 - **Mobile Menu**: Responsive hamburger button with animated 3-bar transition to 'X'.
-- **Minimal Mode**: Available for dedicated poll and error pages (`<Navbar minimal />`).
 
 ### 2. `PollCard` (`src/components/PollCard.tsx`)
 - **Interactive Voting Flow**:

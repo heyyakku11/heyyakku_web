@@ -48,7 +48,7 @@ test('rendered HTML escapes the question and carries OG tags', () => {
   assert.ok(html.includes('<meta property="og:title" content="Q &lt;b&gt;&quot;x&quot;&lt;/b&gt;?">'));
   assert.ok(html.includes(`<meta property="og:url" content="https://yakku.example/poll/aB3dE5gH7k">`));
   assert.ok(html.includes('og:image" content="https://yakku.example/yakku_hero.png"'));
-  assert.ok(html.includes(`href="https://yakku.example/vote/aB3dE5gH7k"`));
+  assert.ok(html.includes(`href="https://yakku.example/vote?share_code=aB3dE5gH7k"`));
   assert.ok(!html.includes('<b>'));
 });
 
