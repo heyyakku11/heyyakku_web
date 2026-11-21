@@ -6,7 +6,7 @@ import { Vote } from './pages/Vote.tsx';
 import { VoteResult } from './pages/VoteResult.tsx';
 import { LiveCheck } from './pages/LiveCheck.tsx';
 import { CardResult } from './pages/CardResult.tsx';
-import { PersonalityVote } from './pages/PersonalityVote.tsx';
+import { LegacyPersonalityRedirect, PersonalityVote } from './pages/PersonalityVote.tsx';
 import { CheckDetail } from './pages/CheckDetail.tsx';
 import { CheckCreate } from './pages/CheckCreate.tsx';
 import { CreatePoll } from './pages/CreatePoll.tsx';
@@ -46,7 +46,8 @@ export function App() {
         <Route path="/create" element={<CreatePoll />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/result/:shareCode" element={<CardResult />} />
-        <Route path="/personality/:shareCode" element={<PersonalityVote />} />
+        <Route path="/personality" element={<PersonalityVote />} />
+        <Route path="/personality/:shareCode" element={<LegacyPersonalityRedirect />} />
         <Route path="/check/:checkId/create" element={<CheckCreate />} />
         <Route path="/check/:checkId" element={<CheckDetail />} />
         <Route path="/ask/login" element={<AskLogin />} />

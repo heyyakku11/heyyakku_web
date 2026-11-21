@@ -81,11 +81,16 @@ test('generated assetlinks.json targets the environment package with the given f
   assert.deepEqual(links[0].target.sha256_cert_fingerprints, [FP]);
 });
 
-test('generated apple-app-site-association covers /vote and legacy /vote/* for the environment bundle', () => {
+test('generated apple-app-site-association covers /vote and /personality (and legacy path links)', () => {
   const aasa = buildAppleAssociation(loadSettings('staging'), 'ABCDE12345');
   const detail = aasa.applinks.details[0];
   assert.deepEqual(detail.appIDs, ['ABCDE12345.com.yakku.app.staging']);
-  assert.deepEqual(detail.components, [{ '/': '/vote' }, { '/': '/vote/*' }]);
+  assert.deepEqual(detail.components, [
+    { '/': '/vote' },
+    { '/': '/vote/*' },
+    { '/': '/personality' },
+    { '/': '/personality/*' },
+  ]);
 });
 
 test('public config exposes only environment, package and bundle id', () => {
